@@ -1,0 +1,24 @@
+server:
+  port: 3000
+  host: "localhost"
+
+postgres:
+  url: "localhost:5432"
+#  url: "db"
+  user: "dima"
+  password: "1"
+  name: "project"
+  driver: "postgres"
+
+redis:
+  url: "localhost:6379"
+  #  url: redis
+  password: ""
+
+minio:
+  endpoint: "localhost:9000"
+  access_key: "miniouser"
+  secret_key: "ohMyMinio"
+  photoes: "photoes"
+  pages: "pages"
+  pdfs: "pdfs"
