@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_NAME: dima
+      DB_USER: dima
+      DB_PASSWORD: 1
+      REDIS_HOST: redis
+#      REDIS_PORT: 6379
+    networks:
+      - app-network
+
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: "dima"
+      POSTGRES_PASSWORD: "1"
+      POSTGRES_DB: "dima"
+    networks:
+      - app-network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  pgdata:
