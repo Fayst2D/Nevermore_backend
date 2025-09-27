@@ -74,14 +74,12 @@ func (a *App) Run(ctx context.Context) error {
 		}
 	}()
 
-	//fmt.Printf("Server is running on http://localhost%s \n", a.server.Addr)
 	log.Info().Msg("Server started")
 
 	if err := a.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 
-	//fmt.Println("Server stopped")
 	log.Info().Msg("Server stopped")
 
 	return nil
