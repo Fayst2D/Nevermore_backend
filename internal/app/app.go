@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"nevermore/internal/transport/handler"
+	"nevermore/pkg/logger"
 
 	"github.com/gammazero/workerpool"
 
@@ -22,6 +23,10 @@ type App struct {
 
 func New() (*App, error) {
 	cfg, err := config.Init()
+
+	if err := logger.Init(cfg.NewLogger()); err != nil {
+		panic(err)
+	}
 
 	db, err := storage.New(cfg.Psql())
 	if err != nil {
@@ -50,6 +55,7 @@ func New() (*App, error) {
 }
 
 func (a *App) Run(ctx context.Context) error {
+	log := logger.Get()
 	go func() {
 		select {
 		case <-ctx.Done():
@@ -68,13 +74,15 @@ func (a *App) Run(ctx context.Context) error {
 		}
 	}()
 
-	fmt.Printf("Server is running on http://localhost%s \n", a.server.Addr)
+	//fmt.Printf("Server is running on http://localhost%s \n", a.server.Addr)
+	log.Info().Msg("Server started")
 
 	if err := a.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 
-	fmt.Println("Server stopped")
+	//fmt.Println("Server stopped")
+	log.Info().Msg("Server stopped")
 
 	return nil
 }

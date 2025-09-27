@@ -4,8 +4,8 @@ server:
 
 postgres:
   url: "localhost:5432"
-#  url: "db"
-  user: "dima"
+  #  url: "db"
+  user: "user"
   password: "1"
   name: "project"
   driver: "postgres"
@@ -22,3 +22,10 @@ minio:
   photoes: "photoes"
   pages: "pages"
   pdfs: "pdfs"
+
+logger:
+  dir: runtime/logs
+  filename: ifc2-adapter-imilk.log
+  level: INFO
+  compress: true
+  duplicate_to_stdout: true

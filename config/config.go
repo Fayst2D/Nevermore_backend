@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"nevermore/pkg/logger"
 
 	"github.com/joho/godotenv"
 
@@ -37,6 +38,18 @@ type Config struct {
 		Pages     string `mapstructure:"pages"`
 		Pdfs      string `mapstructure:"pdfs"`
 	} `mapstructure:"minio"`
+	Logger struct {
+		Dir               string `mapstructure:"dir"`
+		Filename          string `mapstructure:"filename"`
+		Level             string `mapstructure:"level"`
+		MaxSizeMB         int    `mapstructure:"max_size_mb"`
+		MaxBackups        int    `mapstructure:"max_backups"`
+		MaxAgeDays        int    `mapstructure:"max_age_days"`
+		Compress          bool   `mapstructure:"compress"`
+		DuplicateToStdout bool   `mapstructure:"duplicate_to_stdout"`
+		TimeFormat        string `mapstructure:"time_format"`
+		ServiceName       string `mapstructure:"service_name"`
+	} `mapstructure:"logger"`
 }
 
 func (c Config) Psql() postgres.Config {
@@ -65,6 +78,21 @@ func Init() (Config, error) {
 	}
 
 	return config, nil
+}
+
+func (c Config) NewLogger() logger.Config {
+	return logger.Config{
+		Dir:               c.Logger.Dir,
+		Filename:          c.Logger.Filename,
+		Level:             c.Logger.Level,
+		MaxSizeMB:         c.Logger.MaxSizeMB,
+		MaxBackups:        c.Logger.MaxBackups,
+		MaxAgeDays:        c.Logger.MaxAgeDays,
+		Compress:          c.Logger.Compress,
+		DuplicateToStdout: c.Logger.DuplicateToStdout,
+		TimeFormat:        c.Logger.TimeFormat,
+		ServiceName:       c.Logger.ServiceName,
+	}
 }
 
 func LoadConfig() (Config, error) {
