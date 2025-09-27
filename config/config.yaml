@@ -7,7 +7,7 @@ postgres:
   #  url: "db"
   user: "user"
   password: "1"
-  name: "project"
+  name: "nevermore"
   driver: "postgres"
 
 redis:
