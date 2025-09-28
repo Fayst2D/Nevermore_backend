@@ -34,8 +34,6 @@ Nevermore — это проект по созданию веб-платформ�
 
 # 4. Схема БД
 
-## Архитектура базы данных
-
 ```mermaid
 erDiagram
     users {
@@ -140,7 +138,7 @@ erDiagram
     reading_statuses ||--o{ bookmarks : ""
 ```
 
-5. API
+# 5. API
 
 <img width="1840" height="812" alt="image" src="https://github.com/user-attachments/assets/f08cc0ad-c475-4d67-8bdb-2e854db49e45" />
 
