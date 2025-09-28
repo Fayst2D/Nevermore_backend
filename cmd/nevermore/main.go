@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//export GOOSE_DBSTRING="user=dima password=1 dbname=networks sslmode=disable
+//export GOOSE_DBSTRING="user=postgres password=1 dbname=nevermore sslmode=disable
 //echo $GOOSE_DBSTRING
 
 //export GOOSE_DRIVER=postgres
