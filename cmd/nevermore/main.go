@@ -7,6 +7,7 @@ import (
 	"os"
 	"syscall"
 
+	_ "nevermore/docs"
 	"nevermore/internal/app"
 	exit "nevermore/pkg/context"
 
@@ -35,6 +36,9 @@ func init() {
 	}
 }
 
+// @title		Nevermore API
+// @version		1.0
+// @description	API для Nevermore
 func main() {
 	app, err := app.New()
 	if err != nil {

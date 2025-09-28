@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Handler struct {
@@ -19,6 +21,9 @@ func New(serv service.Service) *gin.Engine {
 		serv:   serv,
 		router: gin.New(),
 	}
+
+	//добавление СВАГИ
+	handler.router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	userHandler := user.New(serv)
 

@@ -1,0 +1,118 @@
+definitions:
+  user.User:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+      photo:
+        type: string
+      role:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API для Nevermore
+  title: Nevermore API
+  version: "1.0"
+paths:
+  /user/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete current user account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user account
+      tags:
+      - users
+  /user/get:
+    get:
+      consumes:
+      - application/json
+      description: Get current user profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            $ref: '#/definitions/user.User'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get user profile
+      tags:
+      - users
+  /user/update:
+    put:
+      consumes:
+      - multipart/form-data
+      description: Update current user profile information with optional photo upload
+      parameters:
+      - description: User data in JSON format
+        in: formData
+        name: user
+        required: true
+        type: string
+      - description: Profile photo
+        in: formData
+        name: photo
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User updated successfully
+          schema:
+            type: string
+        "400":
+          description: Bad request - invalid data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update user profile
+      tags:
+      - users
+swagger: "2.0"

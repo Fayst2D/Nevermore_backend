@@ -24,6 +24,16 @@ func New(srv service.Service) *Handler {
 	}
 }
 
+// @Summary Get user profile
+// @Description Get current user profile information
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} user.User "User profile"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal server error"
+// @Router /user/get [get]
 func (h *Handler) Get(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -43,6 +53,7 @@ func (h *Handler) Get(c *gin.Context) {
 	userId, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Internal server error"})
+		return
 	}
 
 	user, err := h.srv.User().Get(ctx, userId)
@@ -54,6 +65,19 @@ func (h *Handler) Get(c *gin.Context) {
 	c.JSON(200, user)
 }
 
+// @Summary Update user profile
+// @Description Update current user profile information with optional photo upload
+// @Tags users
+// @Accept multipart/form-data
+// @Produce json
+// @Security ApiKeyAuth
+// @Param user formData string true "User data in JSON format"
+// @Param photo formData file false "Profile photo"
+// @Success 200 {object} string "User updated successfully"
+// @Failure 400 {object} string "Bad request - invalid data"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal server error"
+// @Router /user/update [put]
 func (h *Handler) Update(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -95,7 +119,16 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "User updated successfully"})
 }
 
-// Delete удаляет пользователя
+// @Summary Delete user account
+// @Description Delete current user account
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} string "User deleted successfully"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal server error"
+// @Router /user/delete [delete]
 func (h *Handler) Delete(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
