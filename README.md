@@ -30,7 +30,7 @@ Nevermore — это проект по созданию веб-платформ�
 
 # 3. Роли пользователей и  описание их действий в системе
 
-<img width="1021" height="641" alt="drawio" src="https://github.com/user-attachments/assets/27103dc4-943d-4eeb-86f3-d382f7b83a29" />
+<img width="1094" height="871" alt="drawio (1)" src="https://github.com/user-attachments/assets/4ec3a8b4-bf84-4416-aecf-c8332c260667" />
 
 # 4. Схема БД
 
