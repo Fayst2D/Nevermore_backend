@@ -1,6 +1,7 @@
 package service
 
 import (
+	"nevermore/internal/service/author"
 	"nevermore/internal/service/user"
 	"nevermore/internal/storage"
 
@@ -11,10 +12,12 @@ import (
 
 type Service interface {
 	User() user.Service
+	Author() author.Service
 }
 
 type service struct {
-	user user.Service
+	user   user.Service
+	author author.Service
 }
 
 func New(st storage.Storage,
@@ -22,7 +25,8 @@ func New(st storage.Storage,
 	wp *workerpool.WorkerPool) Service {
 
 	result := &service{
-		user: user.New(st),
+		user:   user.New(st),
+		author: author.New(st),
 	}
 
 	return result
@@ -30,4 +34,7 @@ func New(st storage.Storage,
 
 func (s *service) User() user.Service {
 	return s.user
+}
+func (s *service) Author() author.Service {
+	return s.author
 }

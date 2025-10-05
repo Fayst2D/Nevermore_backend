@@ -5,7 +5,7 @@ server:
 postgres:
   url: "localhost:5432"
   #  url: "db"
-  user: "user"
+  user: "postgres"
   password: "1"
   name: "nevermore"
   driver: "postgres"

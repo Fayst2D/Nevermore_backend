@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"nevermore/internal/storage/postgres/author"
 	"nevermore/internal/storage/postgres/user"
 
 	"github.com/jmoiron/sqlx"
@@ -11,11 +12,13 @@ import (
 type Repo interface {
 	BeginTx(ctx context.Context) (*sqlx.Tx, error)
 	User() user.Repo
+	Author() author.Repo
 }
 
 type repo struct {
-	db   *sqlx.DB
-	user user.Repo
+	db     *sqlx.DB
+	user   user.Repo
+	author author.Repo
 }
 
 func (r *repo) BeginTx(ctx context.Context) (*sqlx.Tx, error) {
@@ -30,12 +33,16 @@ func NewDB(cfg Config) (Repo, error) {
 	}
 
 	result := &repo{
-		db:   db,
-		user: user.New(db),
+		db:     db,
+		user:   user.New(db),
+		author: author.New(db),
 	}
 	return result, nil
 }
 
 func (r *repo) User() user.Repo {
 	return r.user
+}
+func (r *repo) Author() author.Repo {
+	return r.author
 }

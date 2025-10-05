@@ -2,6 +2,7 @@ package handler
 
 import (
 	"nevermore/internal/service"
+	"nevermore/internal/transport/handler/author"
 	"nevermore/internal/transport/handler/user"
 	middleware2 "nevermore/internal/transport/middleware"
 	"time"
@@ -26,6 +27,7 @@ func New(serv service.Service) *gin.Engine {
 	handler.router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	userHandler := user.New(serv)
+	authorHandler := author.New(serv)
 
 	protected := handler.router.Group("/")
 	protected.Use(middleware2.RateLimiter(1 * time.Second))
@@ -34,6 +36,9 @@ func New(serv service.Service) *gin.Engine {
 		protected.POST("/user/update", userHandler.Update)
 		protected.DELETE("/user/delete", userHandler.Delete)
 	}
+	handler.router.GET("/author/get/:id", authorHandler.Get)
+	handler.router.POST("/author/update/:id", authorHandler.Update)
+	handler.router.DELETE("/author/delete/:id", authorHandler.Delete)
 
 	return handler.router
 }

@@ -26,6 +26,101 @@ info:
   title: Nevermore API
   version: "1.0"
 paths:
+  /author/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete selected author
+      parameters:
+      - description: Author ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Author deleted successfully
+          schema:
+            type: string
+        "404":
+          description: Author not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Delete author
+      tags:
+      - authors
+  /author/get/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get selected author information
+      parameters:
+      - description: Author ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Author information
+          schema:
+            $ref: '#/definitions/user.User'
+        "404":
+          description: Author not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get author
+      tags:
+      - authors
+  /author/update/{id}:
+    put:
+      consumes:
+      - multipart/form-data
+      description: Update selected author information with optional photo upload
+      parameters:
+      - description: Author data in JSON format
+        in: formData
+        name: author
+        required: true
+        type: string
+      - description: photo
+        in: formData
+        name: photo
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Author updated successfully
+          schema:
+            type: string
+        "400":
+          description: Bad request - invalid data
+          schema:
+            type: string
+        "404":
+          description: Author not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Update author information
+      tags:
+      - authors
   /user/delete:
     delete:
       consumes:
