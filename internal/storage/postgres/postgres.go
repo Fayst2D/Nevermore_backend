@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"nevermore/internal/storage/postgres/author"
+	"nevermore/internal/storage/postgres/saved_author"
 	"nevermore/internal/storage/postgres/user"
 
 	"github.com/jmoiron/sqlx"
@@ -13,12 +14,14 @@ type Repo interface {
 	BeginTx(ctx context.Context) (*sqlx.Tx, error)
 	User() user.Repo
 	Author() author.Repo
+	SavedAuthor() saved_author.Repo
 }
 
 type repo struct {
-	db     *sqlx.DB
-	user   user.Repo
-	author author.Repo
+	db          *sqlx.DB
+	user        user.Repo
+	author      author.Repo
+	savedAuthor saved_author.Repo
 }
 
 func (r *repo) BeginTx(ctx context.Context) (*sqlx.Tx, error) {
@@ -33,9 +36,10 @@ func NewDB(cfg Config) (Repo, error) {
 	}
 
 	result := &repo{
-		db:     db,
-		user:   user.New(db),
-		author: author.New(db),
+		db:          db,
+		user:        user.New(db),
+		author:      author.New(db),
+		savedAuthor: saved_author.New(db),
 	}
 	return result, nil
 }
@@ -45,4 +49,7 @@ func (r *repo) User() user.Repo {
 }
 func (r *repo) Author() author.Repo {
 	return r.author
+}
+func (r *repo) SavedAuthor() saved_author.Repo {
+	return r.savedAuthor
 }

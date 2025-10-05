@@ -67,9 +67,9 @@ func (r *repo) Update(ctx context.Context, author model.Author) error {
 }
 
 func (r *repo) Delete(ctx context.Context, id int) error {
-	query := "delete from authors where id = $1"
+	query := "update authors set deleted_at = $1 where id = $2"
 
-	deletedAt := time.Now()
+	deletedAt := time.Now().UTC()
 
 	_, err := r.db.ExecContext(ctx, query, deletedAt, id)
 

@@ -10,7 +10,7 @@ import (
 
 type Service interface {
 	Get(ctx context.Context, userId int) (*dto.UserGetResponse, error)
-	Update(ctx context.Context, user model.User) error
+	Update(ctx context.Context, id int, request dto.UpdateUserRequest) error
 	Delete(ctx context.Context, userId int) error
 }
 
@@ -35,8 +35,16 @@ func (s *service) Get(ctx context.Context, userId int) (*dto.UserGetResponse, er
 	return user, nil
 }
 
-func (s *service) Update(ctx context.Context, user model.User) error {
+func (s *service) Update(ctx context.Context, id int, request dto.UpdateUserRequest) error {
 	var err error
+
+	user := model.User{
+		Id:          id,
+		Name:        request.Name,
+		PhoneNumber: request.PhoneNumber,
+		Password:    request.Password,
+		Photo:       request.Photo,
+	}
 
 	err = s.st.DB().User().Update(ctx, user)
 	if err != nil {

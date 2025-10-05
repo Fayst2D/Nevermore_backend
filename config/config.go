@@ -24,20 +24,6 @@ type Config struct {
 		Name     string `mapstructure:"name"`
 		Driver   string `mapstructure:"driver"`
 	} `mapstructure:"postgres"`
-	Redis struct {
-		User     string `mapstructure:"user"`
-		Password string `mapstructure:"password"`
-		Url      string `mapstructure:"url"`
-		DB       int    `mapstructure:"db"`
-	} `mapstructure:"redis"`
-	Minio struct {
-		Endpoint  string `mapstructure:"endpoint"`
-		AccessKey string `mapstructure:"access_key"`
-		SecretKey string `mapstructure:"secret_key"`
-		Photoes   string `mapstructure:"photoes"`
-		Pages     string `mapstructure:"pages"`
-		Pdfs      string `mapstructure:"pdfs"`
-	} `mapstructure:"minio"`
 	Logger struct {
 		Dir               string `mapstructure:"dir"`
 		Filename          string `mapstructure:"filename"`
@@ -55,20 +41,19 @@ type Config struct {
 func (c Config) Psql() postgres.Config {
 	result := postgres.Config{
 		URL: fmt.Sprintf("postgresql://%s:%s@%s/%s?sslmode=disable",
-			c.Postgres.User,
-			c.Postgres.Password,
-			c.Postgres.Url,
-			c.Postgres.Name,
+			viper.GetString("postgres.user"),
+			viper.GetString("postgres.password"),
+			viper.GetString("postgres.url"),
+			viper.GetString("postgres.name"),
 		),
-
-		Driver: c.Postgres.Driver,
+		Driver: viper.GetString("postgres.driver"),
 	}
 
 	return result
 }
 
 func (c Config) Srv() string {
-	return fmt.Sprintf(":%d", c.Server.Port)
+	return fmt.Sprintf(":%d", viper.GetInt("server.port"))
 }
 
 func Init() (Config, error) {
@@ -80,18 +65,18 @@ func Init() (Config, error) {
 	return config, nil
 }
 
-func (c Config) NewLogger() logger.Config {
+func NewLogger() logger.Config {
 	return logger.Config{
-		Dir:               c.Logger.Dir,
-		Filename:          c.Logger.Filename,
-		Level:             c.Logger.Level,
-		MaxSizeMB:         c.Logger.MaxSizeMB,
-		MaxBackups:        c.Logger.MaxBackups,
-		MaxAgeDays:        c.Logger.MaxAgeDays,
-		Compress:          c.Logger.Compress,
-		DuplicateToStdout: c.Logger.DuplicateToStdout,
-		TimeFormat:        c.Logger.TimeFormat,
-		ServiceName:       c.Logger.ServiceName,
+		Dir:               viper.GetString("logger.dir"),
+		Filename:          viper.GetString("logger.filename"),
+		Level:             viper.GetString("logger.level"),
+		MaxSizeMB:         viper.GetInt("logger.max_size_mb"),
+		MaxBackups:        viper.GetInt("logger.max_backups"),
+		MaxAgeDays:        viper.GetInt("logger.max_age_days"),
+		Compress:          viper.GetBool("logger.compress"),
+		DuplicateToStdout: viper.GetBool("logger.duplicate_to_stdout"),
+		TimeFormat:        viper.GetString("logger.time_format"),
+		ServiceName:       viper.GetString("logger.service_name"),
 	}
 }
 

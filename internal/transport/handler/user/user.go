@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"encoding/json"
-	"nevermore/internal/model/user"
+	"nevermore/internal/dto"
 	"strconv"
 	"time"
 
@@ -82,9 +82,21 @@ func (h *Handler) Update(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	_, exists := c.Get("userID")
+	userID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(401, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	userIDStr, ok := userID.(string)
+	if !ok {
+		c.JSON(500, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	id, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Internal server error"})
 		return
 	}
 
@@ -102,7 +114,7 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
-	var userData user.User
+	var userData dto.UpdateUserRequest
 	if err := json.Unmarshal([]byte(userJSON), &userData); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid user data"})
 		return
@@ -110,7 +122,7 @@ func (h *Handler) Update(c *gin.Context) {
 
 	// Получаем файл фото
 
-	err := h.srv.User().Update(ctx, userData)
+	err = h.srv.User().Update(ctx, id, userData)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

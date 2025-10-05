@@ -3,8 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"github.com/joho/godotenv"
+	"nevermore/config"
+	"nevermore/pkg/logger"
 	"os"
+	"strings"
 	"syscall"
 
 	_ "nevermore/docs"
@@ -14,25 +17,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-//export GOOSE_DBSTRING="user=postgres password=1 dbname=nevermore sslmode=disable
-//echo $GOOSE_DBSTRING
-
-//export GOOSE_DRIVER=postgres
-//echo $GOOSE_DRIVER
-
-//sudo -u postgres psql
-//\c networks
-
-//swag init --generalInfo cmd/Cringe-Networks/main.go --output docs
-
 func init() {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("config")
-	fmt.Println("Loading config...")
+	_ = godotenv.Load()
 
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Ошибка чтения конфигурации: %s", err)
+	viper.SetEnvKeyReplacer(strings.NewReplacer(`.`, `_`))
+	viper.AutomaticEnv()
+
+	if err := logger.Init(config.NewLogger()); err != nil {
+		panic(err)
 	}
 }
 

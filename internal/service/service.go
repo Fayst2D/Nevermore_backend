@@ -2,6 +2,7 @@ package service
 
 import (
 	"nevermore/internal/service/author"
+	"nevermore/internal/service/saved_author"
 	"nevermore/internal/service/user"
 	"nevermore/internal/storage"
 
@@ -13,11 +14,13 @@ import (
 type Service interface {
 	User() user.Service
 	Author() author.Service
+	SavedAuthor() saved_author.Service
 }
 
 type service struct {
-	user   user.Service
-	author author.Service
+	user        user.Service
+	author      author.Service
+	savedAuthor saved_author.Service
 }
 
 func New(st storage.Storage,
@@ -37,4 +40,7 @@ func (s *service) User() user.Service {
 }
 func (s *service) Author() author.Service {
 	return s.author
+}
+func (s *service) SavedAuthor() saved_author.Service {
+	return s.savedAuthor
 }

@@ -55,21 +55,17 @@ func (r *repo) Update(ctx context.Context, user model.User) error {
 	query := `update users
           set name = $1, 
               phone_number = $2, 
-              email = $3, 
-              password = $4,
-              photo = $5,
-              role = $6
-          where id = $7`
+              password = $3,
+              photo = $4,
+          where id = $5`
 
 	_, err := r.db.ExecContext(
 		ctx,
 		query,
 		user.Name,
 		user.PhoneNumber,
-		user.Email,
 		user.Password,
 		user.Photo,
-		user.Role,
 		user.Id,
 	)
 
@@ -79,7 +75,7 @@ func (r *repo) Update(ctx context.Context, user model.User) error {
 func (r *repo) Delete(ctx context.Context, id int) error {
 	query := "update users set deleted_at = $1 where id = $2 and deleted_at is null"
 
-	deletedAt := time.Now()
+	deletedAt := time.Now().UTC()
 
 	_, err := r.db.ExecContext(ctx, query, deletedAt, id)
 

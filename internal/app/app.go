@@ -24,10 +24,6 @@ type App struct {
 func New() (*App, error) {
 	cfg, err := config.Init()
 
-	if err := logger.Init(cfg.NewLogger()); err != nil {
-		panic(err)
-	}
-
 	db, err := storage.New(cfg.Psql())
 	if err != nil {
 		return nil, err
