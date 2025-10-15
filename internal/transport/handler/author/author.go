@@ -59,6 +59,27 @@ func (h *Handler) Get(c *gin.Context) {
 	c.JSON(200, author)
 }
 
+// @Summary Get authors list
+// @Description Get list of authors
+// @Tags authors
+// @Accept json
+// @Produce json
+// @Success 200 {array} dto.AuthorGetResponse "List of authors"
+// @Failure 500 {object} string "Internal server error"
+// @Router /author/list [get]
+func (h *Handler) GetAuthorsList(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	authors, err := h.srv.Author().GetAuthorsList(ctx)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, authors)
+}
+
 // @Summary Update author information
 // @Description Update selected author information with optional photo upload
 // @Tags authors

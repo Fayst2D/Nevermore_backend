@@ -10,6 +10,7 @@ import (
 
 type Service interface {
 	Get(ctx context.Context, authorId int) (*dto.AuthorGetResponse, error)
+	GetAuthorsList(ctx context.Context) ([]*dto.AuthorGetResponse, error)
 	Update(ctx context.Context, author model.Author) error
 	Delete(ctx context.Context, authorId int) error
 }
@@ -33,6 +34,15 @@ func (s *service) Get(ctx context.Context, authorId int) (*dto.AuthorGetResponse
 	}
 
 	return author, nil
+}
+
+func (s *service) GetAuthorsList(ctx context.Context) ([]*dto.AuthorGetResponse, error) {
+	result, err := s.st.DB().Author().GetAuthorsList(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("AuthorService:GetAuthorsList err -> %s", err.Error())
+	}
+
+	return result, nil
 }
 
 func (s *service) Update(ctx context.Context, author model.Author) error {

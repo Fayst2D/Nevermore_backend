@@ -2,7 +2,6 @@ package author
 
 import (
 	"context"
-	"time"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -14,6 +13,7 @@ import (
 type Repo interface {
 	Create(ctx context.Context, author *model.Author) error
 	Get(ctx context.Context, id int) (*dto.AuthorGetResponse, error)
+	GetAuthorsList(ctx context.Context) ([]*dto.AuthorGetResponse, error)
 	Update(ctx context.Context, u model.Author) error
 	Delete(ctx context.Context, id int) error
 }
@@ -67,11 +67,9 @@ func (r *repo) Update(ctx context.Context, author model.Author) error {
 }
 
 func (r *repo) Delete(ctx context.Context, id int) error {
-	query := "update authors set deleted_at = $1 where id = $2"
+	query := "delete from authors where id = $1"
 
-	deletedAt := time.Now().UTC()
-
-	_, err := r.db.ExecContext(ctx, query, deletedAt, id)
+	_, err := r.db.ExecContext(ctx, query, id)
 
 	return err
 }
@@ -83,4 +81,17 @@ func (r *repo) Get(ctx context.Context, id int) (*dto.AuthorGetResponse, error) 
 
 	err := r.db.GetContext(ctx, &author, query, id)
 	return &author, err
+}
+
+func (r *repo) GetAuthorsList(ctx context.Context) ([]*dto.AuthorGetResponse, error) {
+	var authors []*dto.AuthorGetResponse
+
+	query := "select name, biography, photo_url from authors"
+
+	err := r.db.SelectContext(ctx, &authors, query)
+	if err != nil {
+		return nil, err
+	}
+
+	return authors, err
 }

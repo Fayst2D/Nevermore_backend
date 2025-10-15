@@ -43,6 +43,7 @@ func New(serv service.Service) *gin.Engine {
 		protected.GET("/saved-author/list", savedAuthorHandler.GetList)
 
 		handler.router.GET("/author/get/:id", authorHandler.Get)
+		handler.router.GET("/author/list", authorHandler.GetAuthorsList)
 		handler.router.POST("/author/update/:id", authorHandler.Update)
 		handler.router.DELETE("/author/delete/:id", authorHandler.Delete)
 	}

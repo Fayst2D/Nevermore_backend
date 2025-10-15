@@ -1,4 +1,20 @@
 definitions:
+  dto.AuthorGetResponse:
+    properties:
+      biography:
+        type: string
+      name:
+        type: string
+      photo_url:
+        type: string
+    type: object
+  dto.SaveAuthorRequest:
+    properties:
+      author_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
   user.User:
     properties:
       created_at:
@@ -84,6 +100,27 @@ paths:
       summary: Get author
       tags:
       - authors
+  /author/list:
+    get:
+      consumes:
+      - application/json
+      description: Get list of authors
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of authors
+          schema:
+            items:
+              $ref: '#/definitions/dto.AuthorGetResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get authors list
+      tags:
+      - authors
   /author/update/{id}:
     put:
       consumes:
@@ -121,6 +158,104 @@ paths:
       summary: Update author information
       tags:
       - authors
+  /saved-author/create:
+    post:
+      consumes:
+      - application/json
+      description: Save author to user's saved list
+      parameters:
+      - description: Save author request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SaveAuthorRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Author saved successfully
+          schema:
+            type: string
+        "400":
+          description: Bad request - invalid data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Save author
+      tags:
+      - saved_authors
+  /saved-author/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Remove author from user's saved list
+      parameters:
+      - description: Author ID
+        in: query
+        name: author_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Author removed successfully
+          schema:
+            type: string
+        "400":
+          description: Bad request - invalid author ID
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete saved author
+      tags:
+      - saved_authors
+  /saved-author/list:
+    get:
+      consumes:
+      - application/json
+      description: Get list of user's saved authors
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of saved authors
+          schema:
+            items:
+              $ref: '#/definitions/dto.AuthorGetResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get saved authors list
+      tags:
+      - saved_authors
   /user/delete:
     delete:
       consumes:
