@@ -21,3 +21,6 @@ goose_up:
 	GOOSE_DRIVER=postgres GOOSE_DBSTRING="user=postgres password=1 dbname=nevermore sslmode=disable host=localhost" goose up
 goose_down:
 	GOOSE_DRIVER=postgres GOOSE_DBSTRING="user=postgres password=1 dbname=nevermore sslmode=disable host=localhost" goose down
+
+swagger:
+	swag init -g cmd/nevermore/main.go -o docs

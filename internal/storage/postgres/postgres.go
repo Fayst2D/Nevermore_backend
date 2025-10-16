@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"nevermore/internal/storage/postgres/author"
+	"nevermore/internal/storage/postgres/book"
 	"nevermore/internal/storage/postgres/saved_author"
 	"nevermore/internal/storage/postgres/user"
 
@@ -15,6 +16,7 @@ type Repo interface {
 	User() user.Repo
 	Author() author.Repo
 	SavedAuthor() saved_author.Repo
+	Book() book.Repo
 }
 
 type repo struct {
@@ -22,6 +24,7 @@ type repo struct {
 	user        user.Repo
 	author      author.Repo
 	savedAuthor saved_author.Repo
+	book        book.Repo
 }
 
 func (r *repo) BeginTx(ctx context.Context) (*sqlx.Tx, error) {
@@ -40,6 +43,7 @@ func NewDB(cfg Config) (Repo, error) {
 		user:        user.New(db),
 		author:      author.New(db),
 		savedAuthor: saved_author.New(db),
+		book:        book.New(db),
 	}
 	return result, nil
 }
@@ -52,4 +56,7 @@ func (r *repo) Author() author.Repo {
 }
 func (r *repo) SavedAuthor() saved_author.Repo {
 	return r.savedAuthor
+}
+func (r *repo) Book() book.Repo {
+	return r.book
 }

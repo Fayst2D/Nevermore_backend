@@ -24,7 +24,7 @@ type App struct {
 func New() (*App, error) {
 	cfg, err := config.Init()
 
-	db, err := storage.New(cfg.Psql())
+	db, err := storage.New(cfg.Psql(), cfg.Photoes())
 	if err != nil {
 		return nil, err
 	}
