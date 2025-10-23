@@ -107,7 +107,7 @@ func (h *Handler) Update(c *gin.Context) {
 	userId, err := strconv.Atoi(userIDStr)
 
 	if err := c.Request.ParseMultipartForm(10 << 20); // 10 MB limit
-		err != nil {
+	err != nil {
 		c.JSON(400, gin.H{"error": "Failed to parse form data"})
 		return
 	}

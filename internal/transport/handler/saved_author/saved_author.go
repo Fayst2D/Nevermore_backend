@@ -28,7 +28,7 @@ func New(srv service.Service) *Handler {
 // @Tags saved_authors
 // @Accept json
 // @Produce json
-// @Security ApiKeyAuth
+// @Security BearerAuth
 // @Param request body dto.SaveAuthorRequest true "Save author request"
 // @Success 200 {object} string "Author saved successfully"
 // @Failure 400 {object} string "Bad request - invalid data"
@@ -79,7 +79,7 @@ func (h *Handler) Create(c *gin.Context) {
 // @Tags saved_authors
 // @Accept json
 // @Produce json
-// @Security ApiKeyAuth
+// @Security BearerAuth
 // @Param author_id query int true "Author ID"
 // @Success 200 {object} string "Author removed successfully"
 // @Failure 400 {object} string "Bad request - invalid author ID"
@@ -116,7 +116,7 @@ func (h *Handler) Delete(c *gin.Context) {
 // @Tags saved_authors
 // @Accept json
 // @Produce json
-// @Security ApiKeyAuth
+// @Security BearerAuth
 // @Success 200 {array} dto.AuthorGetResponse "List of saved authors"
 // @Failure 401 {object} string "Unauthorized"
 // @Failure 500 {object} string "Internal server error"

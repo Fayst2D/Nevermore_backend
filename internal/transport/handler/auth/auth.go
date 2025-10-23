@@ -82,7 +82,7 @@ func (h *Handler) Login(c *gin.Context) {
 // @Summary Выход пользователя
 // @Description Деактивирует токен пользователя
 // @Tags auth
-// @Security ApiKeyAuth
+// @Security BearerAuth
 // @Produce json
 // @Success 200 {object} dto.MessageResponse "Successfully logged out"
 // @Failure 500 {object} dto.ErrorResponse "Failed to log out"
@@ -107,7 +107,7 @@ func (h *Handler) Logout(c *gin.Context) {
 // @Summary Обновление токена
 // @Description Обновляет access токен с помощью refresh токена
 // @Tags auth
-// @Security ApiKeyAuth
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param request body dto.RefreshRequest true "Refresh токен"

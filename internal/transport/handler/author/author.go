@@ -28,6 +28,7 @@ func New(srv service.Service) *Handler {
 // @Description Get selected author information
 // @Tags authors
 // @Accept json
+// @Security BearerAuth
 // @Produce json
 // @Param id path int true "Author ID"
 // @Success 200 {object} user.User "Author information"
@@ -62,6 +63,7 @@ func (h *Handler) Get(c *gin.Context) {
 // @Summary Get authors list
 // @Description Get list of authors
 // @Tags authors
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Success 200 {array} dto.AuthorGetResponse "List of authors"
@@ -85,6 +87,7 @@ func (h *Handler) GetAuthorsList(c *gin.Context) {
 // @Tags authors
 // @Accept multipart/form-data
 // @Produce json
+// @Security BearerAuth
 // @Param author formData string true "Author data in JSON format"
 // @Param photo formData file false "photo"
 // @Success 200 {object} string "Author updated successfully"
@@ -104,7 +107,7 @@ func (h *Handler) Update(c *gin.Context) {
 
 	// Парсим multipart form
 	if err := c.Request.ParseMultipartForm(10 << 20); // 10 MB limit
-	err != nil {
+		err != nil {
 		c.JSON(400, gin.H{"error": "Failed to parse form data"})
 		return
 	}
@@ -138,6 +141,7 @@ func (h *Handler) Update(c *gin.Context) {
 // @Tags authors
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path int true "Author ID"
 // @Success 200 {object} string "Author deleted successfully"
 // @Failure 404 {object} string "Author not found"

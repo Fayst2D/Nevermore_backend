@@ -129,7 +129,7 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Выход пользователя
       tags:
       - auth
@@ -161,7 +161,7 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Обновление токена
       tags:
       - auth
@@ -221,6 +221,8 @@ paths:
           description: Internal server error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Delete author
       tags:
       - authors
@@ -250,6 +252,8 @@ paths:
           description: Internal server error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get author
       tags:
       - authors
@@ -271,6 +275,8 @@ paths:
           description: Internal server error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get authors list
       tags:
       - authors
@@ -308,6 +314,8 @@ paths:
           description: Internal server error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Update author information
       tags:
       - authors
@@ -343,7 +351,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Save author
       tags:
       - saved_authors
@@ -378,7 +386,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Delete saved author
       tags:
       - saved_authors
@@ -405,7 +413,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Get saved authors list
       tags:
       - saved_authors

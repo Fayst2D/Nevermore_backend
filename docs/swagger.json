@@ -62,7 +62,7 @@
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Деактивирует токен пользователя",
@@ -93,7 +93,7 @@
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Обновляет access токен с помощью refresh токена",
@@ -188,6 +188,11 @@
         },
         "/author/delete/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete selected author",
                 "consumes": [
                     "application/json"
@@ -232,6 +237,11 @@
         },
         "/author/get/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get selected author information",
                 "consumes": [
                     "application/json"
@@ -276,6 +286,11 @@
         },
         "/author/list": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get list of authors",
                 "consumes": [
                     "application/json"
@@ -308,6 +323,11 @@
         },
         "/author/update/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update selected author information with optional photo upload",
                 "consumes": [
                     "multipart/form-data"
@@ -366,7 +386,7 @@
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Save author to user's saved list",
@@ -423,7 +443,7 @@
             "delete": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Remove author from user's saved list",
@@ -478,7 +498,7 @@
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Get list of user's saved authors",

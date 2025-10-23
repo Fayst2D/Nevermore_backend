@@ -65,7 +65,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Деактивирует токен пользователя",
@@ -96,7 +96,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Обновляет access токен с помощью refresh токена",
@@ -191,6 +191,11 @@ const docTemplate = `{
         },
         "/author/delete/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete selected author",
                 "consumes": [
                     "application/json"
@@ -235,6 +240,11 @@ const docTemplate = `{
         },
         "/author/get/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get selected author information",
                 "consumes": [
                     "application/json"
@@ -279,6 +289,11 @@ const docTemplate = `{
         },
         "/author/list": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get list of authors",
                 "consumes": [
                     "application/json"
@@ -311,6 +326,11 @@ const docTemplate = `{
         },
         "/author/update/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update selected author information with optional photo upload",
                 "consumes": [
                     "multipart/form-data"
@@ -369,7 +389,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Save author to user's saved list",
@@ -426,7 +446,7 @@ const docTemplate = `{
             "delete": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Remove author from user's saved list",
@@ -481,7 +501,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Get list of user's saved authors",
