@@ -10,7 +10,7 @@ import (
 
 type Service interface {
 	Get(ctx context.Context, userId int) (*dto.UserGetResponse, error)
-	Update(ctx context.Context, id int, request dto.UpdateUserRequest) error
+	Update(ctx context.Context, userId int, req dto.UpdateUserRequest, photo dto.FileInfo) error
 	Delete(ctx context.Context, userId int) error
 }
 
@@ -35,15 +35,22 @@ func (s *service) Get(ctx context.Context, userId int) (*dto.UserGetResponse, er
 	return user, nil
 }
 
-func (s *service) Update(ctx context.Context, id int, request dto.UpdateUserRequest) error {
+func (s *service) Update(ctx context.Context, userId int, req dto.UpdateUserRequest, photo dto.FileInfo) error {
 	var err error
 
 	user := model.User{
-		Id:          id,
-		Name:        request.Name,
-		PhoneNumber: request.PhoneNumber,
-		Password:    request.Password,
-		Photo:       request.Photo,
+		Id:          userId,
+		Name:        req.Name,
+		PhoneNumber: req.PhoneNumber,
+		Email:       req.Email,
+	}
+
+	if photo.File != nil {
+		photoUrl, err := s.st.Cloud().UploadPhoto(ctx, photo)
+		user.Photo = &photoUrl
+		if err != nil {
+			return fmt.Errorf("UserService:Update err -> %s", err.Error())
+		}
 	}
 
 	err = s.st.DB().User().Update(ctx, user)

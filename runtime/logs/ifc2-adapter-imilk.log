@@ -88,3 +88,5 @@
 {"level":"info","time":"2025-10-24T00:27:38+03:00","message":"Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTI1NTM1NiwiaXNzIjoieW91ci1hcHAifQ.rKI70wDW42YTBj7EkhozIodZQ-8Zmly7uRDApfNZmsA"}
 {"level":"info","time":"2025-10-24T00:27:38+03:00","message":"/user"}
 {"level":"info","time":"2025-10-24T00:27:43+03:00","message":"Server stopped"}
+{"level":"info","time":"2025-10-24T00:42:21+03:00","message":"Server started"}
+{"level":"info","time":"2025-10-24T00:42:23+03:00","message":"Server stopped"}

@@ -3,7 +3,9 @@ package user
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
 	"nevermore/internal/dto"
 	"nevermore/pkg/logger"
 	"strconv"
@@ -105,7 +107,7 @@ func (h *Handler) Update(c *gin.Context) {
 	userId, err := strconv.Atoi(userIDStr)
 
 	if err := c.Request.ParseMultipartForm(10 << 20); // 10 MB limit
-	err != nil {
+		err != nil {
 		c.JSON(400, gin.H{"error": "Failed to parse form data"})
 		return
 	}
@@ -122,25 +124,25 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
-	//file, header, err := c.Request.FormFile("photo")
-	//if err != nil && !errors.Is(err, http.ErrMissingFile) {
-	//	c.JSON(400, gin.H{"error": "Failed to get photo"})
-	//	return
-	//}
+	file, header, err := c.Request.FormFile("photo")
+	if err != nil && !errors.Is(err, http.ErrMissingFile) {
+		c.JSON(400, gin.H{"error": "Failed to get photo"})
+		return
+	}
 
-	//var photo dto.FileInfo
-	//if file != nil {
-	//	defer file.Close()
-	//	photo = dto.FileInfo{
-	//		File:   file,
-	//		Header: header,
-	//	}
-	//}
+	var photo dto.FileInfo
+	if file != nil {
+		defer file.Close()
+		photo = dto.FileInfo{
+			File:   file,
+			Header: header,
+		}
+	}
 
 	log := logger.Get()
 	log.Info().Msg("CALL UPDATE")
 
-	err = h.srv.User().Update(ctx, userId, userData)
+	err = h.srv.User().Update(ctx, userId, userData, photo)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

@@ -13,4 +13,5 @@ type UpdateUserRequest struct {
 	PhoneNumber string  `db:"phone_number" json:"phone_number"`
 	Password    string  `db:"password" json:"password"`
 	Photo       *string `db:"photo" json:"photo"`
+	Email       string  `db:"email" json:"email"`
 }
