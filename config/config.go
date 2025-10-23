@@ -2,50 +2,16 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"nevermore/internal/storage/minio"
 	"nevermore/pkg/logger"
 
 	"nevermore/internal/storage/postgres"
+	"nevermore/internal/storage/redis"
 
 	"github.com/spf13/viper"
 )
 
-type Config struct {
-	Server struct {
-		Port int    `mapstructure:"port"`
-		Host string `mapstructure:"host"`
-	} `mapstructure:"server"`
-	Postgres struct {
-		Url      string `mapstructure:"url"`
-		User     string `mapstructure:"user"`
-		Password string `mapstructure:"password"`
-		Name     string `mapstructure:"name"`
-		Driver   string `mapstructure:"driver"`
-	} `mapstructure:"postgres"`
-	Logger struct {
-		Dir               string `mapstructure:"dir"`
-		Filename          string `mapstructure:"filename"`
-		Level             string `mapstructure:"level"`
-		MaxSizeMB         int    `mapstructure:"max_size_mb"`
-		MaxBackups        int    `mapstructure:"max_backups"`
-		MaxAgeDays        int    `mapstructure:"max_age_days"`
-		Compress          bool   `mapstructure:"compress"`
-		DuplicateToStdout bool   `mapstructure:"duplicate_to_stdout"`
-		TimeFormat        string `mapstructure:"time_format"`
-		ServiceName       string `mapstructure:"service_name"`
-	} `mapstructure:"logger"`
-	Minio struct {
-		Endpoint  string `mapstructure:"endpoint"`
-		AccessKey string `mapstructure:"access_key"`
-		SecretKey string `mapstructure:"secret_key"`
-		Photoes   string `mapstructure:"photoes"`
-		Pages     string `mapstructure:"pages"`
-		Pdfs      string `mapstructure:"pdfs"`
-	} `mapstructure:"minio"`
-}
-
-func (c Config) Psql() postgres.Config {
+func Psql() postgres.Config {
 	result := postgres.Config{
 		URL: fmt.Sprintf("postgresql://%s:%s@%s/%s?sslmode=disable",
 			viper.GetString("postgres.user"),
@@ -59,7 +25,22 @@ func (c Config) Psql() postgres.Config {
 	return result
 }
 
-func (c Config) Photoes() minio.Config {
+func Rds() redis.Config {
+	result := redis.Config{
+		User:     viper.GetString("redis.user"),
+		Password: viper.GetString("redis.password"),
+		Url:      viper.GetString("redis.url"),
+		DB:       viper.GetInt("redis.db"),
+	}
+
+	return result
+}
+
+func JwtSecret() string {
+	return viper.GetString("jwt.secret")
+}
+
+func Photoes() minio.Config {
 	result := minio.Config{
 		AccessKeyID:     viper.GetString("minio.access_key"),
 		SecretAccessKey: viper.GetString("minio.secret_key"),
@@ -72,17 +53,8 @@ func (c Config) Photoes() minio.Config {
 	return result
 }
 
-func (c Config) Srv() string {
+func Srv() string {
 	return fmt.Sprintf(":%d", viper.GetInt("server.port"))
-}
-
-func Init() (Config, error) {
-	var config Config
-	if err := viper.Unmarshal(&config); err != nil {
-		log.Fatalf("Ошибка декодирования конфигурации: %s", err)
-	}
-
-	return config, nil
 }
 
 func NewLogger() logger.Config {

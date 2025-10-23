@@ -1,12 +1,191 @@
 {
+    "schemes": [
+        "http"
+    ],
     "swagger": "2.0",
     "info": {
-        "description": "API для Nevermore",
-        "title": "Nevermore API",
+        "description": "API для backend",
+        "title": "Backend API",
         "contact": {},
         "version": "1.0"
     },
+    "host": "localhost:3000",
+    "basePath": "/",
     "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "Выполняет вход пользователя и возвращает токены",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Аутентификация пользователя",
+                "parameters": [
+                    {
+                        "description": "Учетные данные",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешная аутентификация",
+                        "schema": {
+                            "$ref": "#/definitions/auth.Token"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Деактивирует токен пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Выход пользователя",
+                "responses": {
+                    "200": {
+                        "description": "Successfully logged out",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MessageResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to log out",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Обновляет access токен с помощью refresh токена",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Обновление токена",
+                "parameters": [
+                    {
+                        "description": "Refresh токен",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RefreshRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Новые access и refresh токены",
+                        "schema": {
+                            "$ref": "#/definitions/auth.Token"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Создает нового пользователя в системе",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Регистрация пользователя",
+                "parameters": [
+                    {
+                        "description": "Данные для регистрации",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешная регистрация",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/author/delete/{id}": {
             "delete": {
                 "description": "Delete selected author",
@@ -338,54 +517,14 @@
                 }
             }
         },
-        "/user/delete": {
-            "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Delete current user account",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Delete user account",
-                "responses": {
-                    "200": {
-                        "description": "User deleted successfully",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/get": {
+        "/user": {
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
-                "description": "Get current user profile information",
+                "description": "Get current authenticated user's profile information",
                 "consumes": [
                     "application/json"
                 ],
@@ -393,12 +532,12 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "user"
                 ],
                 "summary": "Get user profile",
                 "responses": {
                     "200": {
-                        "description": "User profile",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/user.User"
                         }
@@ -406,26 +545,24 @@
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     }
                 }
-            }
-        },
-        "/user/update": {
+            },
             "put": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
-                "description": "Update current user profile information with optional photo upload",
+                "description": "Update current authenticated user's profile information and photo",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -433,7 +570,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "user"
                 ],
                 "summary": "Update user profile",
                 "parameters": [
@@ -453,27 +590,65 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "User updated successfully",
+                        "description": "message: User updated successfully",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.MessageResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad request - invalid data",
+                        "description": "error: Bad request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
+                        "description": "error: Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "error: Internal server error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete current authenticated user's account (soft delete)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete user account",
+                "responses": {
+                    "200": {
+                        "description": "message: User deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MessageResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "error: Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "error: Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     }
                 }
@@ -481,6 +656,17 @@
         }
     },
     "definitions": {
+        "auth.Token": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.AuthorGetResponse": {
             "type": "object",
             "properties": {
@@ -491,6 +677,58 @@
                     "type": "string"
                 },
                 "photo_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RefreshRequest": {
+            "type": "object",
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RegisterRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone_number": {
                     "type": "string"
                 }
             }
@@ -538,5 +776,19 @@
                 }
             }
         }
-    }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Введите токен в формате: Bearer {token}",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "tags": [
+        {
+            "description": "Операции с пользователями",
+            "name": "user"
+        }
+    ]
 }

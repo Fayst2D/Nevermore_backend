@@ -1,4 +1,12 @@
+basePath: /
 definitions:
+  auth.Token:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
   dto.AuthorGetResponse:
     properties:
       biography:
@@ -6,6 +14,39 @@ definitions:
       name:
         type: string
       photo_url:
+        type: string
+    type: object
+  dto.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  dto.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone_number:
         type: string
     type: object
   dto.SaveAuthorRequest:
@@ -36,12 +77,124 @@ definitions:
       role:
         type: string
     type: object
+host: localhost:3000
 info:
   contact: {}
-  description: API для Nevermore
-  title: Nevermore API
+  description: API для backend
+  title: Backend API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Выполняет вход пользователя и возвращает токены
+      parameters:
+      - description: Учетные данные
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешная аутентификация
+          schema:
+            $ref: '#/definitions/auth.Token'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Аутентификация пользователя
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      description: Деактивирует токен пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully logged out
+          schema:
+            $ref: '#/definitions/dto.MessageResponse'
+        "500":
+          description: Failed to log out
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Выход пользователя
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Обновляет access токен с помощью refresh токена
+      parameters:
+      - description: Refresh токен
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Новые access и refresh токены
+          schema:
+            $ref: '#/definitions/auth.Token'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Обновление токена
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Создает нового пользователя в системе
+      parameters:
+      - description: Данные для регистрации
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешная регистрация
+          schema:
+            $ref: '#/definitions/dto.MessageResponse'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Регистрация пользователя
+      tags:
+      - auth
   /author/delete/{id}:
     delete:
       consumes:
@@ -256,61 +409,59 @@ paths:
       summary: Get saved authors list
       tags:
       - saved_authors
-  /user/delete:
+  /user:
     delete:
       consumes:
       - application/json
-      description: Delete current user account
+      description: Delete current authenticated user's account (soft delete)
       produces:
       - application/json
       responses:
         "200":
-          description: User deleted successfully
+          description: 'message: User deleted successfully'
           schema:
-            type: string
+            $ref: '#/definitions/dto.MessageResponse'
         "401":
-          description: Unauthorized
+          description: 'error: Unauthorized'
           schema:
-            type: string
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
-          description: Internal server error
+          description: 'error: Internal server error'
           schema:
-            type: string
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Delete user account
       tags:
-      - users
-  /user/get:
+      - user
     get:
       consumes:
       - application/json
-      description: Get current user profile information
+      description: Get current authenticated user's profile information
       produces:
       - application/json
       responses:
         "200":
-          description: User profile
+          description: OK
           schema:
             $ref: '#/definitions/user.User'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Get user profile
       tags:
-      - users
-  /user/update:
+      - user
     put:
       consumes:
       - multipart/form-data
-      description: Update current user profile information with optional photo upload
+      description: Update current authenticated user's profile information and photo
       parameters:
       - description: User data in JSON format
         in: formData
@@ -325,24 +476,35 @@ paths:
       - application/json
       responses:
         "200":
-          description: User updated successfully
+          description: 'message: User updated successfully'
           schema:
-            type: string
+            $ref: '#/definitions/dto.MessageResponse'
         "400":
-          description: Bad request - invalid data
+          description: 'error: Bad request'
           schema:
-            type: string
+            $ref: '#/definitions/dto.ErrorResponse'
         "401":
-          description: Unauthorized
+          description: 'error: Unauthorized'
           schema:
-            type: string
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
-          description: Internal server error
+          description: 'error: Internal server error'
           schema:
-            type: string
+            $ref: '#/definitions/dto.ErrorResponse'
       security:
-      - ApiKeyAuth: []
+      - BearerAuth: []
       summary: Update user profile
       tags:
-      - users
+      - user
+schemes:
+- http
+securityDefinitions:
+  BearerAuth:
+    description: 'Введите токен в формате: Bearer {token}'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
+tags:
+- description: Операции с пользователями
+  name: user

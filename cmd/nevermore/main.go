@@ -28,9 +28,20 @@ func init() {
 	}
 }
 
-// @title		Nevermore API
+// @title		Backend API
 // @version		1.0
-// @description	API для Nevermore
+// @description	API для backend
+// @host		localhost:3000
+// @BasePath	/
+// @schemes		http
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Введите токен в формате: Bearer {token}
+
+// @tag.name user
+// @tag.description Операции с пользователями
 func main() {
 	app, err := app.New()
 	if err != nil {

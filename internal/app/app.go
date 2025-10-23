@@ -13,6 +13,7 @@ import (
 	"nevermore/config"
 	"nevermore/internal/service"
 	"nevermore/internal/storage"
+	"nevermore/pkg/auth"
 	"nevermore/pkg/hash"
 )
 
@@ -22,27 +23,28 @@ type App struct {
 }
 
 func New() (*App, error) {
-	cfg, err := config.Init()
-
-	db, err := storage.New(cfg.Psql(), cfg.Photoes())
+	db, err := storage.New(config.Psql(), config.Rds(), config.Photoes())
 	if err != nil {
 		return nil, err
 	}
 
 	hasher := hash.NewSHA1Hasher("aboba")
 
+	jwtSecret := config.JwtSecret()
+
+	manager, err := auth.NewManager(jwtSecret)
 	if err != nil {
 		return nil, err
 	}
 
 	wp := workerpool.New(100)
 
-	srv := service.New(db, hasher, wp)
+	srv := service.New(db, hasher, manager, wp)
 
 	result := &App{
 		server: &http.Server{
-			Addr:    cfg.Srv(),
-			Handler: handler.New(srv),
+			Addr:    config.Srv(),
+			Handler: handler.New(srv, manager),
 		},
 		wp: wp,
 	}

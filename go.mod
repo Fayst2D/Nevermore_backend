@@ -3,14 +3,17 @@ module nevermore
 go 1.24.0
 
 require (
+	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/gammazero/workerpool v1.1.3
 	github.com/gen2brain/go-fitz v1.24.15
 	github.com/gin-gonic/gin v1.10.1
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/minio/minio-go/v7 v7.0.95
+	github.com/redis/go-redis/v9 v9.16.0
 	github.com/rs/zerolog v1.34.0
 	github.com/spf13/viper v1.19.0
 	github.com/swaggo/files v1.0.1
@@ -23,8 +26,10 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/ebitengine/purego v0.8.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect

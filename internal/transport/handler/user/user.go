@@ -3,7 +3,9 @@ package user
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"nevermore/internal/dto"
+	"nevermore/pkg/logger"
 	"strconv"
 	"time"
 
@@ -24,19 +26,25 @@ func New(srv service.Service) *Handler {
 	}
 }
 
+// Get godoc
 // @Summary Get user profile
-// @Description Get current user profile information
-// @Tags users
+// @Description Get current authenticated user's profile information
+// @Tags user
 // @Accept json
 // @Produce json
-// @Security ApiKeyAuth
-// @Success 200 {object} user.User "User profile"
-// @Failure 401 {object} string "Unauthorized"
-// @Failure 500 {object} string "Internal server error"
-// @Router /user/get [get]
+// @Security BearerAuth
+// @Success 200 {object} user.User
+// @Failure 401 {object} dto.ErrorResponse "Unauthorized"
+// @Failure 500 {object} dto.ErrorResponse "Internal server error"
+// @Router /user [get]
 func (h *Handler) Get(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
+
+	log := logger.Get()
+	log.Info().Msg(c.Request.RequestURI)
+
+	fmt.Println(c.Request.RequestURI)
 
 	userID, exists := c.Get("userID")
 	if !exists {
@@ -53,7 +61,6 @@ func (h *Handler) Get(c *gin.Context) {
 	userId, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Internal server error"})
-		return
 	}
 
 	user, err := h.srv.User().Get(ctx, userId)
@@ -65,19 +72,20 @@ func (h *Handler) Get(c *gin.Context) {
 	c.JSON(200, user)
 }
 
+// Update godoc
 // @Summary Update user profile
-// @Description Update current user profile information with optional photo upload
-// @Tags users
+// @Description Update current authenticated user's profile information and photo
+// @Tags user
 // @Accept multipart/form-data
 // @Produce json
-// @Security ApiKeyAuth
+// @Security BearerAuth
 // @Param user formData string true "User data in JSON format"
 // @Param photo formData file false "Profile photo"
-// @Success 200 {object} string "User updated successfully"
-// @Failure 400 {object} string "Bad request - invalid data"
-// @Failure 401 {object} string "Unauthorized"
-// @Failure 500 {object} string "Internal server error"
-// @Router /user/update [put]
+// @Success 200 {object} dto.MessageResponse "message: User updated successfully"
+// @Failure 400 {object} dto.ErrorResponse "error: Bad request"
+// @Failure 401 {object} dto.ErrorResponse "error: Unauthorized"
+// @Failure 500 {object} dto.ErrorResponse "error: Internal server error"
+// @Router /user [put]
 func (h *Handler) Update(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -94,20 +102,14 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
-	id, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Internal server error"})
-		return
-	}
+	userId, err := strconv.Atoi(userIDStr)
 
-	// Парсим multipart form
 	if err := c.Request.ParseMultipartForm(10 << 20); // 10 MB limit
 	err != nil {
 		c.JSON(400, gin.H{"error": "Failed to parse form data"})
 		return
 	}
 
-	// Получаем данные пользователя из формы
 	userJSON := c.PostForm("user")
 	if userJSON == "" {
 		c.JSON(400, gin.H{"error": "User data is required"})
@@ -120,9 +122,25 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
-	// Получаем файл фото
+	//file, header, err := c.Request.FormFile("photo")
+	//if err != nil && !errors.Is(err, http.ErrMissingFile) {
+	//	c.JSON(400, gin.H{"error": "Failed to get photo"})
+	//	return
+	//}
 
-	err = h.srv.User().Update(ctx, id, userData)
+	//var photo dto.FileInfo
+	//if file != nil {
+	//	defer file.Close()
+	//	photo = dto.FileInfo{
+	//		File:   file,
+	//		Header: header,
+	//	}
+	//}
+
+	log := logger.Get()
+	log.Info().Msg("CALL UPDATE")
+
+	err = h.srv.User().Update(ctx, userId, userData)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -131,21 +149,21 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "User updated successfully"})
 }
 
+// Delete godoc
 // @Summary Delete user account
-// @Description Delete current user account
-// @Tags users
+// @Description Delete current authenticated user's account (soft delete)
+// @Tags user
 // @Accept json
 // @Produce json
-// @Security ApiKeyAuth
-// @Success 200 {object} string "User deleted successfully"
-// @Failure 401 {object} string "Unauthorized"
-// @Failure 500 {object} string "Internal server error"
-// @Router /user/delete [delete]
+// @Security BearerAuth
+// @Success 200 {object} dto.MessageResponse "message: User deleted successfully"
+// @Failure 401 {object} dto.ErrorResponse "error: Unauthorized"
+// @Failure 500 {object} dto.ErrorResponse "error: Internal server error"
+// @Router /user [delete]
 func (h *Handler) Delete(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	// Получаем userID из контекста
 	userID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(401, gin.H{"error": "Unauthorized"})
