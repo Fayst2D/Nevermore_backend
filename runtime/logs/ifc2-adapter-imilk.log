@@ -90,3 +90,18 @@
 {"level":"info","time":"2025-10-24T00:27:43+03:00","message":"Server stopped"}
 {"level":"info","time":"2025-10-24T00:42:21+03:00","message":"Server started"}
 {"level":"info","time":"2025-10-24T00:42:23+03:00","message":"Server stopped"}
+{"level":"info","time":"2025-10-24T21:08:27+03:00","message":"Server started"}
+{"level":"info","time":"2025-10-24T21:14:43+03:00","message":"Server stopped"}
+{"level":"info","time":"2025-10-24T21:21:38+03:00","message":"Server started"}
+{"level":"info","time":"2025-10-24T21:25:09+03:00","message":"login success -> &{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTMzMTIwOSwiaXNzIjoieW91ci1hcHAifQ.XMMVX2fOIGqb6v1BlBfqfymf1UHmfU4FwjKH0sh_v4M eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTkzNTEwOSwiaXNzIjoieW91ci1hcHAifQ.DlCHakw4iPuCJOF1yNcq6yVDn7yDrmHL7k9awa1Jth0}, 1"}
+{"level":"info","time":"2025-10-24T21:25:18+03:00","message":"Server stopped"}
+{"level":"info","time":"2025-10-24T21:28:33+03:00","message":"Server started"}
+{"level":"info","time":"2025-10-24T21:28:35+03:00","message":"Server stopped"}
+{"level":"info","time":"2025-10-24T21:28:43+03:00","message":"Server started"}
+{"level":"info","time":"2025-10-24T21:30:06+03:00","message":"login success -> &{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTMzMTUwNiwiaXNzIjoieW91ci1hcHAifQ.E4Xk0CYre5aYCiYa0JgI0OtGgBHORM1t9iIcqIwpRZ0 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTkzNTQwNiwiaXNzIjoieW91ci1hcHAifQ.pUutZtCfmZ4lNp7rlfMJc1gI6i21ZuVo6ApO_LD4NMY}, 1"}
+{"level":"info","time":"2025-10-24T21:32:26+03:00","message":"Server stopped"}
+{"level":"info","time":"2025-10-24T21:32:34+03:00","message":"Server started"}
+{"level":"info","time":"2025-10-24T21:33:09+03:00","message":"login success -> &{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTMzMTY4OSwiaXNzIjoieW91ci1hcHAifQ.DKpVfBySUuzEI4S_EXfNmUuIGYXTQC4n3tKRq_yibfM eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTkzNTU4OSwiaXNzIjoieW91ci1hcHAifQ.ebYWIisQtkQT7VTMrX5sZclpzGkj-HtqB9j49XLdmL8}, 1"}
+{"level":"info","time":"2025-10-24T21:33:24+03:00","message":"login success -> &{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTMzMTcwNCwiaXNzIjoieW91ci1hcHAifQ.kWKC-tr-1XpRUhKSiw669ysyE_RHdjAy3ELqDjawejk eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTkzNTYwNCwiaXNzIjoieW91ci1hcHAifQ.pkCKiOTnH6_7pIiTtQoGMVh3iUSqTu3LQVfYSaXiDM4}, 1"}
+{"level":"info","time":"2025-10-24T21:37:13+03:00","message":"login success -> &{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTMzMTkzMywiaXNzIjoieW91ci1hcHAifQ.BfaNps0Ky6iVzZ350LIT3Urwp_eRS9EJjKdJ0LVlGuk eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTkzNTgzMywiaXNzIjoieW91ci1hcHAifQ.BqG8nLg2bl9_L8Gfcs6GGxGInukcq-xtLF3b6cTO9Zk}, 1"}
+{"level":"info","time":"2025-10-24T21:46:07+03:00","message":"Server stopped"}

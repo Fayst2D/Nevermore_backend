@@ -2,6 +2,8 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+
+	"github.com/gin-contrib/cors"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"nevermore/internal/service"
@@ -25,6 +27,15 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 		serv:   serv,
 		router: gin.Default(),
 	}
+
+	handler.router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // Разрешить все домены
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"},
+		AllowHeaders:     []string{"*"}, // Разрешить все заголовки
+		ExposeHeaders:    []string{"Content-Length", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	//добавление СВАГИ
 	handler.router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
