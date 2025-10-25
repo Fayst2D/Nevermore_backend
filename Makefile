@@ -24,3 +24,6 @@ goose_down:
 
 swagger:
 	swag init -g cmd/nevermore/main.go -o docs
+
+lint:
+	golangci-lint run -c .golangci.yml

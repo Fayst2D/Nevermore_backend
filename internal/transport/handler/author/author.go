@@ -158,6 +158,9 @@ func (h *Handler) Delete(c *gin.Context) {
 	}
 
 	authorId, err := strconv.Atoi(authorIdStr)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Internal server error"})
+	}
 
 	err = h.srv.Author().Delete(ctx, authorId)
 	if err != nil {

@@ -41,7 +41,12 @@ func (s *service) Create(ctx context.Context, req *dto.CreateBookRequest, file d
 	if err != nil {
 		return fmt.Errorf("BookService:Create err -> %s", err.Error())
 	}
-	defer tx.Rollback()
+	defer func(tx *sqlx.Tx) {
+		err := tx.Rollback()
+		if err != nil {
+			panic("Rollback err -> " + err.Error())
+		}
+	}(tx)
 
 	req.FileUrl, err = s.st.Cloud().UploadPdf(ctx, file)
 	if err != nil {
@@ -139,6 +144,9 @@ func (s *service) processBook(ctx context.Context, tx *sqlx.Tx, url string, book
 	}
 
 	urls, err := s.splitPdfToPages(ctx, fileInfo, bookId)
+	if err != nil {
+		return fmt.Errorf("BookService:Process err -> %v", err.Error())
+	}
 
 	err = s.st.DB().Book().SaveFirstPage(ctx, tx, urls[0], bookId)
 	if err != nil {

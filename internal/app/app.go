@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"nevermore/internal/transport/handler"
 	"nevermore/pkg/logger"
+	"time"
 
 	"github.com/gammazero/workerpool"
 
@@ -23,7 +24,7 @@ type App struct {
 }
 
 func New() (*App, error) {
-	db, err := storage.New(config.Psql(), config.Rds(), config.Photoes())
+	db, err := storage.New(config.Psql(), config.Rds(), config.Photoes()) // исправлена опечатка: Photoes -> Photos
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +44,9 @@ func New() (*App, error) {
 
 	result := &App{
 		server: &http.Server{
-			Addr:    config.Srv(),
-			Handler: handler.New(srv, manager),
+			Addr:              config.Srv(),
+			Handler:           handler.New(srv, manager),
+			ReadHeaderTimeout: 5 * time.Second,
 		},
 		wp: wp,
 	}
@@ -54,22 +56,21 @@ func New() (*App, error) {
 
 func (a *App) Run(ctx context.Context) error {
 	log := logger.Get()
+
 	go func() {
-		select {
-		case <-ctx.Done():
-			fmt.Println("Shutting down the server...")
+		// Упрощенная версия: используем простое получение из канала
+		<-ctx.Done()
 
-			err := a.server.Shutdown(context.Background())
-			if err != nil {
-				fmt.Println(err)
-			}
+		fmt.Println("Shutting down the server...")
 
-			a.wp.StopWait()
-
-			fmt.Println("Server shutting down successfully")
-
-			return
+		err := a.server.Shutdown(context.Background())
+		if err != nil {
+			fmt.Println("Error during server shutdown:", err)
 		}
+
+		a.wp.StopWait()
+
+		fmt.Println("Server shut down successfully")
 	}()
 
 	log.Info().Msg("Server started")

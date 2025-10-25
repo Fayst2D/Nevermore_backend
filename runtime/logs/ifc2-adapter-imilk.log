@@ -105,3 +105,11 @@
 {"level":"info","time":"2025-10-24T21:33:24+03:00","message":"login success -> &{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTMzMTcwNCwiaXNzIjoieW91ci1hcHAifQ.kWKC-tr-1XpRUhKSiw669ysyE_RHdjAy3ELqDjawejk eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTkzNTYwNCwiaXNzIjoieW91ci1hcHAifQ.pkCKiOTnH6_7pIiTtQoGMVh3iUSqTu3LQVfYSaXiDM4}, 1"}
 {"level":"info","time":"2025-10-24T21:37:13+03:00","message":"login success -> &{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTMzMTkzMywiaXNzIjoieW91ci1hcHAifQ.BfaNps0Ky6iVzZ350LIT3Urwp_eRS9EJjKdJ0LVlGuk eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImV4cCI6MTc2MTkzNTgzMywiaXNzIjoieW91ci1hcHAifQ.BqG8nLg2bl9_L8Gfcs6GGxGInukcq-xtLF3b6cTO9Zk}, 1"}
 {"level":"info","time":"2025-10-24T21:46:07+03:00","message":"Server stopped"}
+{"level":"info","time":"2025-10-24T21:52:30+03:00","message":"Server started"}
+{"level":"info","time":"2025-10-24T21:58:55+03:00","message":"Server stopped"}
+{"level":"info","time":"2025-10-25T20:35:33+03:00","message":"Server started"}
+{"level":"info","time":"2025-10-25T20:35:37+03:00","message":"Server stopped"}
+{"level":"info","time":"2025-10-25T20:37:30+03:00","message":"Server started"}
+{"level":"info","time":"2025-10-25T20:37:32+03:00","message":"Server stopped"}
+{"level":"info","time":"2025-10-25T20:40:14+03:00","message":"Server started"}
+{"level":"info","time":"2025-10-25T20:40:16+03:00","message":"Server stopped"}

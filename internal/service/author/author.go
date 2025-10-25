@@ -46,9 +46,7 @@ func (s *service) GetAuthorsList(ctx context.Context) ([]*dto.AuthorGetResponse,
 }
 
 func (s *service) Update(ctx context.Context, author model.Author) error {
-	var err error
-
-	err = s.st.DB().Author().Update(ctx, author)
+	err := s.st.DB().Author().Update(ctx, author)
 	if err != nil {
 		return fmt.Errorf("AuthorService:Update err -> %s", err.Error())
 	}

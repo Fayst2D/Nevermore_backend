@@ -4,13 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"nevermore/internal/dto"
-	"time"
 
 	"nevermore/internal/service"
 	_ "nevermore/pkg/auth"
 )
-
-const timeout = 15 * time.Second
 
 type Handler struct {
 	srv service.Service

@@ -105,6 +105,9 @@ func (h *Handler) Update(c *gin.Context) {
 	}
 
 	userId, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Internal server error"})
+	}
 
 	if err := c.Request.ParseMultipartForm(10 << 20); // 10 MB limit
 	err != nil {
@@ -179,6 +182,9 @@ func (h *Handler) Delete(c *gin.Context) {
 	}
 
 	userId, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Internal server error"})
+	}
 
 	err = h.srv.User().Delete(ctx, userId)
 	if err != nil {
