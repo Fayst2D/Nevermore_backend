@@ -141,6 +141,5 @@ erDiagram
 
 # 5. API
 Документация будет доступна по адресу: http://localhost:3000/docs/
-
-<img width="1840" height="812" alt="image" src="https://github.com/user-attachments/assets/f08cc0ad-c475-4d67-8bdb-2e854db49e45" />
+<img width="1837" height="905" alt="image" src="https://github.com/user-attachments/assets/80bb587a-042a-44c1-9bdf-23216caf60f7" />
 
