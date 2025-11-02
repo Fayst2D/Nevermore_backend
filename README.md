@@ -141,6 +141,7 @@ erDiagram
 
 # 5. API
 Документация будет доступна по адресу: http://localhost:3000/docs/
+<img width="1837" height="905" alt="image" src="https://github.com/user-attachments/assets/80bb587a-042a-44c1-9bdf-23216caf60f7" />
 
 # 6. Организация сетевого взаимодействия
 
@@ -150,5 +151,5 @@ erDiagram
 4. написать в ngrok ngrok http 3000
 5. скомпилировать проект
 6. передать полученную ссылку на фронт
-<img width="1837" height="905" alt="image" src="https://github.com/user-attachments/assets/80bb587a-042a-44c1-9bdf-23216caf60f7" />
+
 
