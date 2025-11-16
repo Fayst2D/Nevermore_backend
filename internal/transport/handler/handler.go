@@ -3,18 +3,20 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/gin-contrib/cors"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"nevermore/internal/service"
 	"nevermore/internal/transport/handler/auth"
 	"nevermore/internal/transport/handler/author"
 	"nevermore/internal/transport/handler/book"
+	"nevermore/internal/transport/handler/chat"
 	"nevermore/internal/transport/handler/saved_author"
 	"nevermore/internal/transport/handler/user"
 	middleware2 "nevermore/internal/transport/middleware"
 	tokenManager "nevermore/pkg/auth"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Handler struct {
@@ -45,6 +47,7 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 	savedAuthorHandler := saved_author.New(serv)
 	bookHandler := book.New(serv)
 	authHandler := auth.New(serv)
+	chatHandler := chat.New(serv)
 
 	handler.router.POST("/auth/register", authHandler.Register)
 	handler.router.POST("/auth/login", authHandler.Login)
@@ -67,6 +70,9 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 		protected.DELETE("/author/delete/:id", authorHandler.Delete)
 
 		protected.POST("/book/upload", bookHandler.Create)
+
+		protected.GET("/chat/history", chatHandler.GetChatHistory)
+		protected.POST("/chat/create", chatHandler.CreateMessage)
 	}
 
 	return handler.router

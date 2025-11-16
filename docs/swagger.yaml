@@ -16,6 +16,19 @@ definitions:
       photo_url:
         type: string
     type: object
+  dto.CreateMessageRequest:
+    properties:
+      content:
+        type: string
+      room_id:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
   dto.ErrorResponse:
     properties:
       error:
@@ -319,6 +332,115 @@ paths:
       summary: Update author information
       tags:
       - authors
+  /chat/history:
+    get:
+      consumes:
+      - application/json
+      description: Get message history for specific chat room
+      parameters:
+      - description: Room ID
+        in: query
+        name: room_id
+        required: true
+        type: string
+      - default: 50
+        description: 'Limit number of messages (default: 50, max: 1000)'
+        in: query
+        maximum: 1000
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Chat history" {object} struct {
+          schema:
+            type: object
+        "400":
+          description: Bad request - missing room_id
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get chat history
+      tags:
+      - chat
+  /chat/message:
+    post:
+      consumes:
+      - application/json
+      description: Create new message in chat room
+      parameters:
+      - description: Message data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Message created successfully
+          schema:
+            type: string
+        "400":
+          description: Bad request - invalid data
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create message
+      tags:
+      - chat
+  /chat/ws:
+    get:
+      consumes:
+      - application/json
+      description: Establish WebSocket connection for real-time chat
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: Room ID
+        in: query
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: WebSocket connection established" {object} struct {
+          schema:
+            type: object
+        "400":
+          description: Bad request - missing required parameters
+          schema:
+            type: string
+      summary: WebSocket connection
+      tags:
+      - chat
   /saved-author/create:
     post:
       consumes:
