@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"nevermore/internal/transport/handler/chat"
+
 	"github.com/gin-gonic/gin"
 
 	"nevermore/internal/service"
 	"nevermore/internal/transport/handler/auth"
 	"nevermore/internal/transport/handler/author"
 	"nevermore/internal/transport/handler/book"
-	"nevermore/internal/transport/handler/chat"
 	"nevermore/internal/transport/handler/saved_author"
 	"nevermore/internal/transport/handler/user"
 	middleware2 "nevermore/internal/transport/middleware"
@@ -71,8 +72,9 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 
 		protected.POST("/book/upload", bookHandler.Create)
 
-		protected.GET("/chat/history", chatHandler.GetChatHistory)
-		protected.POST("/chat/create", chatHandler.CreateMessage)
+		protected.GET("/chat/ws", chatHandler.WebSocketHandler)
+		protected.GET("/chat/messages", chatHandler.GetMessages)
+		protected.GET("/chat/online", chatHandler.GetOnlineUsers)
 	}
 
 	return handler.router

@@ -385,14 +385,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/chat/history": {
+        "/chat/messages": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get message history for specific chat room",
+                "description": "Получить последние сообщения из чата",
                 "consumes": [
                     "application/json"
                 ],
@@ -402,36 +402,24 @@ const docTemplate = `{
                 "tags": [
                     "chat"
                 ],
-                "summary": "Get chat history",
+                "summary": "Получить историю сообщений",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Room ID",
-                        "name": "room_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "maximum": 1000,
-                        "minimum": 1,
                         "type": "integer",
                         "default": 50,
-                        "description": "Limit number of messages (default: 50, max: 1000)",
+                        "description": "Количество сообщений",
                         "name": "limit",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Chat history\" {object} struct {",
+                        "description": "Список сообщений",
                         "schema": {
-                            "type": "object"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request - missing room_id",
-                        "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ChatMessageResponse"
+                            }
                         }
                     },
                     "500": {
@@ -443,14 +431,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/chat/message": {
-            "post": {
+        "/chat/online": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create new message in chat room",
+                "description": "Получить список пользователей онлайн в чате",
                 "consumes": [
                     "application/json"
                 ],
@@ -460,41 +448,12 @@ const docTemplate = `{
                 "tags": [
                     "chat"
                 ],
-                "summary": "Create message",
-                "parameters": [
-                    {
-                        "description": "Message data",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateMessageRequest"
-                        }
-                    }
-                ],
+                "summary": "Получить список онлайн пользователей",
                 "responses": {
                     "200": {
-                        "description": "Message created successfully",
+                        "description": "Список онлайн пользователей",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request - invalid data",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.OnlineUsersResponse"
                         }
                     }
                 }
@@ -502,54 +461,20 @@ const docTemplate = `{
         },
         "/chat/ws": {
             "get": {
-                "description": "Establish WebSocket connection for real-time chat",
-                "consumes": [
-                    "application/json"
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
                 ],
+                "description": "Установка WebSocket соединения для участия в чате",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "chat"
                 ],
-                "summary": "WebSocket connection",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Username",
-                        "name": "username",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Room ID",
-                        "name": "room_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "WebSocket connection established\" {object} struct {",
-                        "schema": {
-                            "type": "object"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request - missing required parameters",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
+                "summary": "WebSocket соединение для чата",
+                "responses": {}
             }
         },
         "/saved-author/create": {
@@ -871,20 +796,23 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateMessageRequest": {
+        "dto.ChatMessageResponse": {
             "type": "object",
             "properties": {
                 "content": {
                     "type": "string"
                 },
-                "room_id": {
+                "created_at": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "type": {
                     "type": "string"
                 },
                 "user_id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string"
@@ -915,6 +843,20 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.OnlineUsersResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

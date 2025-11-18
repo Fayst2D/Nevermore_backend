@@ -16,16 +16,18 @@ definitions:
       photo_url:
         type: string
     type: object
-  dto.CreateMessageRequest:
+  dto.ChatMessageResponse:
     properties:
       content:
         type: string
-      room_id:
+      created_at:
         type: string
+      id:
+        type: integer
       type:
         type: string
       user_id:
-        type: string
+        type: integer
       username:
         type: string
     type: object
@@ -45,6 +47,15 @@ definitions:
     properties:
       message:
         type: string
+    type: object
+  dto.OnlineUsersResponse:
+    properties:
+      count:
+        type: integer
+      users:
+        items:
+          type: string
+        type: array
     type: object
   dto.RefreshRequest:
     properties:
@@ -332,113 +343,61 @@ paths:
       summary: Update author information
       tags:
       - authors
-  /chat/history:
+  /chat/messages:
     get:
       consumes:
       - application/json
-      description: Get message history for specific chat room
+      description: Получить последние сообщения из чата
       parameters:
-      - description: Room ID
-        in: query
-        name: room_id
-        required: true
-        type: string
       - default: 50
-        description: 'Limit number of messages (default: 50, max: 1000)'
+        description: Количество сообщений
         in: query
-        maximum: 1000
-        minimum: 1
         name: limit
         type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: Chat history" {object} struct {
+          description: Список сообщений
           schema:
-            type: object
-        "400":
-          description: Bad request - missing room_id
-          schema:
-            type: string
+            items:
+              $ref: '#/definitions/dto.ChatMessageResponse'
+            type: array
         "500":
           description: Internal server error
           schema:
             type: string
       security:
       - BearerAuth: []
-      summary: Get chat history
+      summary: Получить историю сообщений
       tags:
       - chat
-  /chat/message:
-    post:
+  /chat/online:
+    get:
       consumes:
       - application/json
-      description: Create new message in chat room
-      parameters:
-      - description: Message data
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateMessageRequest'
+      description: Получить список пользователей онлайн в чате
       produces:
       - application/json
       responses:
         "200":
-          description: Message created successfully
+          description: Список онлайн пользователей
           schema:
-            type: string
-        "400":
-          description: Bad request - invalid data
-          schema:
-            type: string
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-        "500":
-          description: Internal server error
-          schema:
-            type: string
+            $ref: '#/definitions/dto.OnlineUsersResponse'
       security:
       - BearerAuth: []
-      summary: Create message
+      summary: Получить список онлайн пользователей
       tags:
       - chat
   /chat/ws:
     get:
-      consumes:
-      - application/json
-      description: Establish WebSocket connection for real-time chat
-      parameters:
-      - description: User ID
-        in: query
-        name: user_id
-        required: true
-        type: string
-      - description: Username
-        in: query
-        name: username
-        required: true
-        type: string
-      - description: Room ID
-        in: query
-        name: room_id
-        required: true
-        type: string
+      description: Установка WebSocket соединения для участия в чате
       produces:
       - application/json
-      responses:
-        "200":
-          description: WebSocket connection established" {object} struct {
-          schema:
-            type: object
-        "400":
-          description: Bad request - missing required parameters
-          schema:
-            type: string
-      summary: WebSocket connection
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: WebSocket соединение для чата
       tags:
       - chat
   /saved-author/create:

@@ -65,7 +65,6 @@ func (s *service) Book() book.Service {
 func (s *service) Auth() authorization.Service {
 	return s.auth
 }
-
 func (s *service) Chat() chat.Service {
 	return s.chat
 }

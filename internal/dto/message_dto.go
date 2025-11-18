@@ -1,27 +1,21 @@
 package dto
 
-type WSMessage struct {
-	Type    string      `json:"type"`
-	Payload interface{} `json:"payload"`
+import "time"
+
+type ChatMessageRequest struct {
+	Content string `json:"content" binding:"required"`
 }
 
-type Connection struct {
-	UserID   string
-	Username string
-	RoomID   string
-	Send     chan []byte
+type ChatMessageResponse struct {
+	ID        int       `json:"id"`
+	UserID    int       `json:"user_id"`
+	Username  string    `json:"username"`
+	Content   string    `json:"content"`
+	Type      string    `json:"type"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
-type CreateMessageRequest struct {
-	UserID   string `json:"user_id" db:"user_id"`
-	Username string `json:"username" db:"username"`
-	Content  string `json:"content" db:"content"`
-	Type     string `json:"type" db:"type"`
-	RoomID   string `json:"room_id" db:"room_id"`
-}
-
-type ChatStats struct {
-	OnlineUsersCount int      `json:"online_users_count"`
-	OnlineUsers      []string `json:"online_users"`
-	ActiveRooms      []string `json:"active_rooms"`
+type OnlineUsersResponse struct {
+	Count int      `json:"count"`
+	Users []string `json:"users"`
 }
