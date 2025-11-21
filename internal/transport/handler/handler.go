@@ -75,6 +75,12 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 		protected.GET("/chat/ws", chatHandler.WebSocketHandler)
 		protected.GET("/chat/messages", chatHandler.GetMessages)
 		protected.GET("/chat/online", chatHandler.GetOnlineUsers)
+		//личные сообщения
+		protected.POST("/chat/private/send", chatHandler.SendPrivateMessage)
+		protected.GET("/chat/private/conversation/:user_id", chatHandler.GetPrivateConversation)
+		//protected.GET("/chat/private/conversations", chatHandler.GetConversations)
+		protected.POST("/chat/private/mark-read", chatHandler.MarkMessagesAsRead)
+		protected.GET("/chat/private/unread-count", chatHandler.GetUnreadCount)
 	}
 
 	return handler.router

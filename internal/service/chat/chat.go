@@ -16,6 +16,13 @@ type Service interface {
 	AddClient(client *chat.Client)
 	RemoveClient(client *chat.Client)
 	GetOnlineUsers() []string
+
+	//Личные сообщения
+	SendPrivateMessage(ctx context.Context, message chat.PrivateMessage) error
+	GetPrivateMessages(ctx context.Context, user1ID, user2ID int, limit int) ([]chat.PrivateMessage, error)
+	GetConversations(ctx context.Context, userID int) ([]chat.PrivateConversation, error)
+	MarkMessagesAsRead(ctx context.Context, messageIDs []int) error
+	GetUnreadCount(ctx context.Context, userID int) (int, error)
 }
 
 type service struct {
@@ -99,4 +106,49 @@ func (s *service) GetOnlineUsers() []string {
 		return true
 	})
 	return users
+}
+
+//Личные сообщения
+
+func (s *service) SendPrivateMessage(ctx context.Context, message chat.PrivateMessage) error {
+	// Сохраняем сообщение в БД
+	err := s.st.DB().PrivateMessage().CreatePrivateMessage(ctx, message)
+	if err != nil {
+		return fmt.Errorf("failed to save private message: %w", err)
+	}
+
+	// Отправляем сообщение получателю, если он онлайн
+	if receiver, ok := s.clients.Load(message.ReceiverID); ok {
+		receiverClient := receiver.(*chat.Client)
+		select {
+		case receiverClient.Send <- chat.Message{
+			ID:        message.ID,
+			UserID:    message.SenderID,
+			Username:  message.SenderName,
+			Content:   fmt.Sprintf("[Private] %s", message.Content),
+			Type:      "private",
+			CreatedAt: message.CreatedAt,
+		}:
+		default:
+			fmt.Printf("Receiver %s channel is full, skipping\n", message.ReceiverName)
+		}
+	}
+
+	return nil
+}
+
+func (s *service) GetPrivateMessages(ctx context.Context, user1ID, user2ID int, limit int) ([]chat.PrivateMessage, error) {
+	return s.st.DB().PrivateMessage().GetPrivateMessages(ctx, user1ID, user2ID, limit)
+}
+
+func (s *service) GetConversations(ctx context.Context, userID int) ([]chat.PrivateConversation, error) {
+	return s.st.DB().PrivateMessage().GetConversations(ctx, userID)
+}
+
+func (s *service) MarkMessagesAsRead(ctx context.Context, messageIDs []int) error {
+	return s.st.DB().PrivateMessage().MarkMessagesAsRead(ctx, messageIDs)
+}
+
+func (s *service) GetUnreadCount(ctx context.Context, userID int) (int, error) {
+	return s.st.DB().PrivateMessage().GetUnreadCount(ctx, userID)
 }

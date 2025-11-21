@@ -43,6 +43,15 @@ definitions:
       password:
         type: string
     type: object
+  dto.MarkAsReadRequest:
+    properties:
+      message_ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - message_ids
+    type: object
   dto.MessageResponse:
     properties:
       message:
@@ -56,6 +65,35 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  dto.PrivateMessageRequest:
+    properties:
+      content:
+        type: string
+      receiver_id:
+        type: integer
+    required:
+    - content
+    - receiver_id
+    type: object
+  dto.PrivateMessageResponse:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_read:
+        type: boolean
+      receiver_id:
+        type: integer
+      receiver_name:
+        type: string
+      sender_id:
+        type: integer
+      sender_name:
+        type: string
     type: object
   dto.RefreshRequest:
     properties:
@@ -389,6 +427,131 @@ paths:
       summary: Получить список онлайн пользователей
       tags:
       - chat
+  /chat/private/conversation/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Получить историю личных сообщений с пользователем
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - default: 50
+        description: Количество сообщений
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: История сообщений
+          schema:
+            items:
+              $ref: '#/definitions/dto.PrivateMessageResponse'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Получить личную переписку
+      tags:
+      - private-chat
+  /chat/private/mark-read:
+    post:
+      consumes:
+      - application/json
+      description: Пометить личные сообщения как прочитанные
+      parameters:
+      - description: ID сообщений
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MarkAsReadRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сообщения помечены как прочитанные
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Пометить сообщения как прочитанные
+      tags:
+      - private-chat
+  /chat/private/send:
+    post:
+      consumes:
+      - application/json
+      description: Отправка личного сообщения другому пользователю
+      parameters:
+      - description: Данные сообщения
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PrivateMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сообщение отправлено
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Отправить личное сообщение
+      tags:
+      - private-chat
+  /chat/private/unread-count:
+    get:
+      consumes:
+      - application/json
+      description: Получить общее количество непрочитанных личных сообщений
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Количество непрочитанных сообщений
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Получить количество непрочитанных сообщений
+      tags:
+      - private-chat
   /chat/ws:
     get:
       description: Установка WebSocket соединения для участия в чате

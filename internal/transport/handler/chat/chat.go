@@ -180,3 +180,130 @@ func (h *Handler) GetOnlineUsers(c *gin.Context) {
 
 	c.JSON(200, response)
 }
+
+// Личные сообщения
+// @Summary Отправить личное сообщение
+// @Description Отправка личного сообщения другому пользователю
+// @Tags private-chat
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param request body dto.PrivateMessageRequest true "Данные сообщения"
+// @Success 200 {object} string "Сообщение отправлено"
+// @Failure 400 {object} string "Bad request"
+// @Failure 500 {object} string "Internal server error"
+// @Router /chat/private/send [post]
+func (h *Handler) SendPrivateMessage(c *gin.Context) {
+	userID, _ := c.Get("userID")
+	username, _ := c.Get("username")
+
+	var req dto.PrivateMessageRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": fmt.Sprintf("Invalid request: %v", err)})
+		return
+	}
+
+	// Создаем приватное сообщение
+	privateMessage := chat.PrivateMessage{
+		SenderID:     userID.(int),
+		ReceiverID:   req.ReceiverID,
+		SenderName:   username.(string),
+		ReceiverName: "", // Можно получить из БД или кэша
+		Content:      req.Content,
+		IsRead:       false,
+		CreatedAt:    time.Now(),
+	}
+
+	err := h.srv.Chat().SendPrivateMessage(c.Request.Context(), privateMessage)
+	if err != nil {
+		c.JSON(500, gin.H{"error": fmt.Sprintf("Failed to send message: %v", err)})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Private message sent successfully"})
+}
+
+// @Summary Получить личную переписку
+// @Description Получить историю личных сообщений с пользователем
+// @Tags private-chat
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param user_id path int true "ID пользователя"
+// @Param limit query int false "Количество сообщений" default(50)
+// @Success 200 {array} dto.PrivateMessageResponse "История сообщений"
+// @Failure 400 {object} string "Bad request"
+// @Failure 500 {object} string "Internal server error"
+// @Router /chat/private/conversation/{user_id} [get]
+func (h *Handler) GetPrivateConversation(c *gin.Context) {
+	userID, _ := c.Get("userID")
+
+	otherUserIDStr := c.Param("user_id")
+	otherUserID, err := strconv.Atoi(otherUserIDStr)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	limitStr := c.DefaultQuery("limit", "50")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		limit = 50
+	}
+
+	messages, err := h.srv.Chat().GetPrivateMessages(c.Request.Context(), userID.(int), otherUserID, limit)
+	if err != nil {
+		c.JSON(500, gin.H{"error": fmt.Sprintf("Failed to get conversation: %v", err)})
+		return
+	}
+
+	c.JSON(200, messages)
+}
+
+// @Summary Пометить сообщения как прочитанные
+// @Description Пометить личные сообщения как прочитанные
+// @Tags private-chat
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param request body dto.MarkAsReadRequest true "ID сообщений"
+// @Success 200 {object} string "Сообщения помечены как прочитанные"
+// @Failure 400 {object} string "Bad request"
+// @Failure 500 {object} string "Internal server error"
+// @Router /chat/private/mark-read [post]
+func (h *Handler) MarkMessagesAsRead(c *gin.Context) {
+	var req dto.MarkAsReadRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": fmt.Sprintf("Invalid request: %v", err)})
+		return
+	}
+
+	err := h.srv.Chat().MarkMessagesAsRead(c.Request.Context(), req.MessageIDs)
+	if err != nil {
+		c.JSON(500, gin.H{"error": fmt.Sprintf("Failed to mark messages as read: %v", err)})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Messages marked as read"})
+}
+
+// @Summary Получить количество непрочитанных сообщений
+// @Description Получить общее количество непрочитанных личных сообщений
+// @Tags private-chat
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]int "Количество непрочитанных сообщений"
+// @Failure 500 {object} string "Internal server error"
+// @Router /chat/private/unread-count [get]
+func (h *Handler) GetUnreadCount(c *gin.Context) {
+	userID, _ := c.Get("userID")
+
+	count, err := h.srv.Chat().GetUnreadCount(c.Request.Context(), userID.(int))
+	if err != nil {
+		c.JSON(500, gin.H{"error": fmt.Sprintf("Failed to get unread count: %v", err)})
+		return
+	}
+
+	c.JSON(200, gin.H{"unread_count": count})
+}

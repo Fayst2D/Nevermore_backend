@@ -6,6 +6,7 @@ import (
 	"nevermore/internal/storage/postgres/author"
 	"nevermore/internal/storage/postgres/book"
 	"nevermore/internal/storage/postgres/chat"
+	"nevermore/internal/storage/postgres/private_message"
 	"nevermore/internal/storage/postgres/saved_author"
 	"nevermore/internal/storage/postgres/user"
 
@@ -19,15 +20,17 @@ type Repo interface {
 	SavedAuthor() saved_author.Repo
 	Book() book.Repo
 	Chat() chat.Repo
+	PrivateMessage() private_message.Repo
 }
 
 type repo struct {
-	db          *sqlx.DB
-	user        user.Repo
-	author      author.Repo
-	savedAuthor saved_author.Repo
-	book        book.Repo
-	chat        chat.Repo
+	db             *sqlx.DB
+	user           user.Repo
+	author         author.Repo
+	savedAuthor    saved_author.Repo
+	book           book.Repo
+	chat           chat.Repo
+	privateMessage private_message.Repo
 }
 
 func (r *repo) BeginTx(ctx context.Context) (*sqlx.Tx, error) {
@@ -42,12 +45,13 @@ func NewDB(cfg Config) (Repo, error) {
 	}
 
 	result := &repo{
-		db:          db,
-		user:        user.New(db),
-		author:      author.New(db),
-		savedAuthor: saved_author.New(db),
-		book:        book.New(db),
-		chat:        chat.New(db),
+		db:             db,
+		user:           user.New(db),
+		author:         author.New(db),
+		savedAuthor:    saved_author.New(db),
+		book:           book.New(db),
+		chat:           chat.New(db),
+		privateMessage: private_message.New(db),
 	}
 	return result, nil
 }
@@ -64,4 +68,5 @@ func (r *repo) SavedAuthor() saved_author.Repo {
 func (r *repo) Book() book.Repo {
 	return r.book
 }
-func (r *repo) Chat() chat.Repo { return r.chat }
+func (r *repo) Chat() chat.Repo                      { return r.chat }
+func (r *repo) PrivateMessage() private_message.Repo { return r.privateMessage }

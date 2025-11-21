@@ -1,7 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
--- migrations/002_create_chat_messages.sql
-CREATE TABLE IF NOT EXISTS chat_messages (
+CREATE TABLE chat_messages (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     username VARCHAR(255) NOT NULL,
