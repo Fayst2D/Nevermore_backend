@@ -72,6 +72,7 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 
 		protected.POST("/book/upload", bookHandler.Create)
 		protected.GET("/book/by-author/:author_id", bookHandler.GetByAuthor)
+		protected.GET("/book/search", bookHandler.SearchByTitle)
 
 		protected.GET("/chat/ws", chatHandler.WebSocketHandler)
 		protected.GET("/chat/messages", chatHandler.GetMessages)

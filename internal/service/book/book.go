@@ -22,6 +22,7 @@ import (
 type Service interface {
 	Create(ctx context.Context, req *dto.CreateBookRequest, file dto.FileInfo) error
 	GetByAuthor(ctx context.Context, authorID int) ([]dto.GetBookRequest, error)
+	SearchByTitle(ctx context.Context, searchQuery string, limit, offset int) ([]dto.GetBookRequest, error)
 }
 
 type service struct {
@@ -162,6 +163,16 @@ func (s *service) GetByAuthor(ctx context.Context, authorID int) ([]dto.GetBookR
 	books, err := s.st.DB().Book().GetByAuthor(ctx, authorID)
 	if err != nil {
 		return books, fmt.Errorf("BookService:GetByAuthor err -> %s", err.Error())
+	}
+
+	return books, nil
+}
+
+func (s *service) SearchByTitle(ctx context.Context, searchQuery string, limit, offset int) ([]dto.GetBookRequest, error) {
+
+	books, err := s.st.DB().Book().SearchByTitle(ctx, searchQuery, limit, offset)
+	if err != nil {
+		return books, fmt.Errorf("BookService:SearchByTitle err -> %s", err.Error())
 	}
 
 	return books, nil

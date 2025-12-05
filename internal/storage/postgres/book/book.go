@@ -3,6 +3,7 @@ package book
 import (
 	"context"
 	"nevermore/internal/dto"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -11,6 +12,7 @@ type Repo interface {
 	Create(ctx context.Context, tx *sqlx.Tx, req *dto.CreateBookRequest) (int, error)
 	SaveFirstPage(ctx context.Context, tx *sqlx.Tx, url string, bookId int) error
 	GetByAuthor(ctx context.Context, authorID int) ([]dto.GetBookRequest, error)
+	SearchByTitle(ctx context.Context, searchQuery string, limit, offset int) ([]dto.GetBookRequest, error)
 }
 
 type repo struct {
@@ -54,15 +56,32 @@ func (r *repo) SaveFirstPage(ctx context.Context, tx *sqlx.Tx, url string, bookI
 }
 
 func (r *repo) GetByAuthor(ctx context.Context, authorID int) ([]dto.GetBookRequest, error) {
-	var result []*dto.GetBookRequest
+	var books []dto.GetBookRequest
 
-	query := `SELECT id, title, description, author, uploaded_by, status, url, created_at 
+	query := `SELECT title, description, cover_image_url, file_url, uploaded_by, author_id 
               FROM books 
-              WHERE author = $1 
+              WHERE author_id = $1 
               ORDER BY created_at DESC`
 
+	err := r.db.SelectContext(ctx, &books, query, authorID)
+
+	return books, err
+}
+
+func (r *repo) SearchByTitle(ctx context.Context, searchQuery string, limit, offset int) ([]dto.GetBookRequest, error) {
+	// Подготовка поискового запроса (регистронезависимый поиск)
+	searchPattern := "%" + strings.ToLower(searchQuery) + "%"
+
+	// Запрос для получения данных с пагинацией
+	searchQuerySQL := `
+		SELECT title, description, cover_image_url, file_url, uploaded_by, author_id
+		FROM books 
+		WHERE LOWER(title) LIKE $1 
+		ORDER BY created_at DESC 
+		LIMIT $2 OFFSET $3`
+
 	var books []dto.GetBookRequest
-	err := r.db.SelectContext(ctx, &result, query, authorID)
+	err := r.db.SelectContext(ctx, &books, searchQuerySQL, searchPattern, limit, offset)
 
 	return books, err
 }

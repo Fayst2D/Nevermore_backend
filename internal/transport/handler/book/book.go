@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,23 @@ func New(srv service.Service) *Handler {
 	}
 }
 
+// @Summary Создание новой книги
+// @Description Создает новую книгу с возможностью загрузки файла
+// @Tags books
+// @Accept multipart/form-data
+// @Produce json
+// @Security BearerAuth
+// @Param title formData string true "Название книги" minlength(1)
+// @Param author formData string true "Автор книги" minlength(1)
+// @Param description formData string false "Описание книги"
+// @Param File formData file false "Файл книги (PDF, EPUB, etc.)"
+// @Success 200 {object} map[string]string "Успешное создание книги"
+// @Success 201 {object} map[string]string "Книга создана"
+// @Failure 400 {object} map[string]string "Некорректные входные данные"
+// @Failure 401 {object} map[string]string "Неавторизованный доступ"
+// @Failure 413 {object} map[string]string "Превышен максимальный размер файла"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /books [post]
 func (h *Handler) Create(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -96,15 +114,27 @@ func (h *Handler) Create(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Book created successfully"})
 }
 
-// GetByAuthor возвращает книги указанного автора
+// @Summary Получение книг по автору
+// @Description Возвращает список книг указанного автора по его ID
+// @Tags books
+// @Accept json
+// @Security BearerAuth
+// @Produce json
+// @Param author_id path integer true "ID автора" minimum(1)
+// @Success 200 {object} map[string]interface{} "Успешный ответ с книгами автора"
+// @Success 200 {object} map[string]interface{} "Список книг автора"
+// @Failure 400 {object} map[string]string "Некорректный ID автора или параметр отсутствует"
+// @Failure 404 {object} map[string]interface{} "Книги не найдены для указанного автора"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /book/by-author/{author_id} [get]
 func (h *Handler) GetByAuthor(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	// Получаем ID автора из query параметра
-	authorIDStr := c.Query("author_id")
+	authorIDStr := c.Param("author_id")
 	if authorIDStr == "" {
-		c.JSON(400, gin.H{"error": "author_id query parameter is required"})
+		c.JSON(400, gin.H{"error": "author_id path parameter is required"})
 		return
 	}
 
@@ -127,4 +157,67 @@ func (h *Handler) GetByAuthor(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"books": books})
+}
+
+// @Summary Поиск книг по названию
+// @Description Регистронезависимый поиск книг по названию с поддержкой пагинации
+// @Tags books
+// @Accept json
+// @Security BearerAuth
+// @Produce json
+// @Param q query string true "Поисковый запрос"
+// @Param limit query integer false "Количество результатов на странице (по умолчанию 50, максимум 100)" default(50) minimum(1) maximum(100)
+// @Param offset query integer false "Смещение для пагинации (по умолчанию 0)" default(0) minimum(0)
+// @Success 200 {object} map[string]interface{} "Результаты поиска"
+// @Success 200 {object} map[string]interface{} "Успешный ответ с книгами"
+// @Failure 400 {object} map[string]string "Отсутствует поисковый запрос"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /book/search [get]
+// SearchByTitle ищет книги по названию (регистронезависимый поиск)
+func (h *Handler) SearchByTitle(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Получаем поисковый запрос из query параметра
+	searchQuery := strings.TrimSpace(c.Query("q"))
+	if searchQuery == "" {
+		c.JSON(400, gin.H{"error": "Search query parameter 'q' is required"})
+		return
+	}
+
+	// Опциональные параметры пагинации
+	limitStr := c.DefaultQuery("limit", "50")
+	offsetStr := c.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 || limit > 100 {
+		limit = 50 // дефолтное значение
+	}
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 0 {
+		offset = 0
+	}
+
+	// Вызываем сервис для поиска книг
+	books, err := h.srv.Book().SearchByTitle(ctx, searchQuery, limit, offset)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := gin.H{
+		"books": books,
+		"meta": gin.H{
+			"limit":  limit,
+			"offset": offset,
+			"query":  searchQuery,
+		},
+	}
+
+	if len(books) == 0 {
+		response["message"] = "No books found matching your search"
+	}
+
+	c.JSON(200, response)
 }
