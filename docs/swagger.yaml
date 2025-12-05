@@ -381,6 +381,115 @@ paths:
       summary: Update author information
       tags:
       - authors
+  /books:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Создает новую книгу с возможностью загрузки файла
+      parameters:
+      - description: Название книги
+        in: formData
+        minLength: 1
+        name: title
+        required: true
+        type: string
+      - description: Автор книги
+        in: formData
+        minLength: 1
+        name: author
+        required: true
+        type: string
+      - description: Описание книги
+        in: formData
+        name: description
+        type: string
+      - description: Файл книги (PDF, EPUB, etc.)
+        in: formData
+        name: File
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное создание книги
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "201":
+          description: Книга создана
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Некорректные входные данные
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Неавторизованный доступ
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "413":
+          description: Превышен максимальный размер файла
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создание новой книги
+      tags:
+      - books
+  /books/by-author/{author-id}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список книг указанного автора
+      parameters:
+      - description: ID автора
+        in: query
+        name: author_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ с книгами
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Некорректный параметр author_id
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Книги не найдены
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получение книг по автору
+      tags:
+      - books
   /chat/messages:
     get:
       consumes:

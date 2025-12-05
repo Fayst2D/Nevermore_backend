@@ -71,7 +71,7 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 		protected.DELETE("/author/delete/:id", authorHandler.Delete)
 
 		protected.POST("/book/upload", bookHandler.Create)
-		protected.GET("/book/by-author/:id", bookHandler.GetByAuthor)
+		protected.GET("/book/by-author/:author_id", bookHandler.GetByAuthor)
 
 		protected.GET("/chat/ws", chatHandler.WebSocketHandler)
 		protected.GET("/chat/messages", chatHandler.GetMessages)
