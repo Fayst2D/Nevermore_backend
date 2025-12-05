@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"image/jpeg"
 	"io"
 	"log"
@@ -14,12 +13,15 @@ import (
 	"os"
 	"time"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/gammazero/workerpool"
 	"github.com/gen2brain/go-fitz"
 )
 
 type Service interface {
 	Create(ctx context.Context, req *dto.CreateBookRequest, file dto.FileInfo) error
+	GetByAuthor(ctx context.Context, authorID int) ([]dto.GetBookRequest, error)
 }
 
 type service struct {
@@ -154,4 +156,13 @@ func (s *service) processBook(ctx context.Context, tx *sqlx.Tx, url string, book
 	}
 
 	return nil
+}
+
+func (s *service) GetByAuthor(ctx context.Context, authorID int) ([]dto.GetBookRequest, error) {
+	books, err := s.st.DB().Book().GetByAuthor(ctx, authorID)
+	if err != nil {
+		return books, fmt.Errorf("BookService:GetByAuthor err -> %s", err.Error())
+	}
+
+	return books, nil
 }

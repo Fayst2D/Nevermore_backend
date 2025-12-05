@@ -3,12 +3,13 @@ package book
 import (
 	"context"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
-	"nevermore/internal/dto"
 	"strconv"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
+	"nevermore/internal/dto"
 	"nevermore/internal/service"
 )
 
@@ -93,4 +94,37 @@ func (h *Handler) Create(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "Book created successfully"})
+}
+
+// GetByAuthor возвращает книги указанного автора
+func (h *Handler) GetByAuthor(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Получаем ID автора из query параметра
+	authorIDStr := c.Query("author_id")
+	if authorIDStr == "" {
+		c.JSON(400, gin.H{"error": "author_id query parameter is required"})
+		return
+	}
+
+	authorID, err := strconv.Atoi(authorIDStr)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "author_id must be a valid integer"})
+		return
+	}
+
+	// Вызываем сервис для получения книг автора
+	books, err := h.srv.Book().GetByAuthor(ctx, authorID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(books) == 0 {
+		c.JSON(404, gin.H{"message": "No books found for this author", "books": []dto.GetBookRequest{}})
+		return
+	}
+
+	c.JSON(200, gin.H{"books": books})
 }

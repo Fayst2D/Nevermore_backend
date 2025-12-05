@@ -2,13 +2,15 @@ package book
 
 import (
 	"context"
-	"github.com/jmoiron/sqlx"
 	"nevermore/internal/dto"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type Repo interface {
 	Create(ctx context.Context, tx *sqlx.Tx, req *dto.CreateBookRequest) (int, error)
 	SaveFirstPage(ctx context.Context, tx *sqlx.Tx, url string, bookId int) error
+	GetByAuthor(ctx context.Context, authorID int) ([]dto.GetBookRequest, error)
 }
 
 type repo struct {
@@ -49,4 +51,18 @@ func (r *repo) SaveFirstPage(ctx context.Context, tx *sqlx.Tx, url string, bookI
 	_, err := tx.ExecContext(ctx, query, url, bookId)
 
 	return err
+}
+
+func (r *repo) GetByAuthor(ctx context.Context, authorID int) ([]dto.GetBookRequest, error) {
+	var result []*dto.GetBookRequest
+
+	query := `SELECT id, title, description, author, uploaded_by, status, url, created_at 
+              FROM books 
+              WHERE author = $1 
+              ORDER BY created_at DESC`
+
+	var books []dto.GetBookRequest
+	err := r.db.SelectContext(ctx, &result, query, authorID)
+
+	return books, err
 }
