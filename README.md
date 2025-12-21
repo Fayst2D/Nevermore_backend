@@ -144,7 +144,7 @@ erDiagram
 <img width="1820" height="699" alt="image" src="https://github.com/user-attachments/assets/af3bd573-3b79-4fa1-9a32-fcddc4900eeb" />
 <img width="1819" height="620" alt="image" src="https://github.com/user-attachments/assets/bacf4395-8085-4966-8c7f-f973bd477ffd" />
 <img width="1795" height="267" alt="image" src="https://github.com/user-attachments/assets/e4229dcb-ee39-41d4-9d42-7dbcf52f923f" />
-
+реализован поиск книг по их названию по ссылке /book/search с параметрами {поисковый запрос} и {максимальное кол-во результатов}
 
 
 
