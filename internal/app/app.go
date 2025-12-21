@@ -15,6 +15,7 @@ import (
 	"nevermore/internal/service"
 	"nevermore/internal/storage"
 	"nevermore/pkg/auth"
+	"nevermore/pkg/email"
 	"nevermore/pkg/hash"
 )
 
@@ -40,7 +41,9 @@ func New() (*App, error) {
 
 	wp := workerpool.New(100)
 
-	srv := service.New(db, hasher, manager, wp)
+	emailSrv := email.New(config.SMTP(), config.AppBaseURL())
+
+	srv := service.New(db, hasher, manager, wp, emailSrv)
 
 	result := &App{
 		server: &http.Server{

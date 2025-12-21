@@ -127,3 +127,30 @@ func (h *Handler) Refresh(c *gin.Context) {
 
 	c.JSON(http.StatusOK, token)
 }
+
+// VerifyEmail godoc
+// @Summary Подтверждение email адреса
+// @Description Подтверждает email адрес пользователя по токену из письма
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param token query string true "Токен подтверждения"
+// @Success 200 {object} dto.MessageResponse "Email успешно подтвержден"
+// @Failure 400 {object} dto.ErrorResponse "Ошибка в запросе"
+// @Failure 500 {object} dto.ErrorResponse "Внутренняя ошибка сервера"
+// @Router /auth/verify-email [get]
+func (h *Handler) VerifyEmail(c *gin.Context) {
+	token := c.Query("token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "token is required"})
+		return
+	}
+
+	err := h.srv.Auth().VerifyEmail(c, token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Email successfully verified"})
+}

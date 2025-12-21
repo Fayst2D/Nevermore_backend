@@ -126,6 +126,8 @@ definitions:
         type: string
       email:
         type: string
+      email_verified:
+        type: boolean
       id:
         type: integer
       name:
@@ -255,6 +257,35 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: Регистрация пользователя
+      tags:
+      - auth
+  /auth/verify-email:
+    get:
+      consumes:
+      - application/json
+      description: Подтверждает email адрес пользователя по токену из письма
+      parameters:
+      - description: Токен подтверждения
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email успешно подтвержден
+          schema:
+            $ref: '#/definitions/dto.MessageResponse'
+        "400":
+          description: Ошибка в запросе
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Подтверждение email адреса
       tags:
       - auth
   /author/delete/{id}:
@@ -435,18 +466,11 @@ paths:
         required: true
         type: string
       - default: 50
-        description: Количество результатов на странице (по умолчанию 50, максимум
-          100)
+        description: Количество результатов на странице
         in: query
         maximum: 100
         minimum: 1
         name: limit
-        type: integer
-      - default: 0
-        description: Смещение для пагинации (по умолчанию 0)
-        in: query
-        minimum: 0
-        name: offset
         type: integer
       produces:
       - application/json

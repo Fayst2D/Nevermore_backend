@@ -52,6 +52,7 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 
 	handler.router.POST("/auth/register", authHandler.Register)
 	handler.router.POST("/auth/login", authHandler.Login)
+	handler.router.GET("/auth/verify-email", authHandler.VerifyEmail)
 
 	protected := handler.router.Group("/")
 	protected.Use(middleware2.AuthMiddleware(manager))

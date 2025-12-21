@@ -12,6 +12,7 @@ import (
 
 	"github.com/gammazero/workerpool"
 
+	"nevermore/pkg/email"
 	"nevermore/pkg/hash"
 )
 
@@ -36,14 +37,15 @@ type service struct {
 func New(st storage.Storage,
 	hash hash.PasswordHasher,
 	manager auth.TokenManager,
-	wp *workerpool.WorkerPool) Service {
+	wp *workerpool.WorkerPool,
+	emailSrv email.Service) Service {
 
 	//go chat.Run()
 	result := &service{
-		user:   user.New(st),
+		user:   user.New(st, emailSrv),
 		author: author.New(st),
 		book:   book.New(st, wp),
-		auth:   authorization.New(st, manager, hash),
+		auth:   authorization.New(st, manager, hash, emailSrv),
 		chat:   chat.New(st, wp),
 	}
 

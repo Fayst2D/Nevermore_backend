@@ -12,11 +12,13 @@ import (
 	"nevermore/internal/dto"
 	"nevermore/internal/storage"
 	"nevermore/pkg/auth"
+	"nevermore/pkg/email"
 	"nevermore/pkg/hash"
 
 	model "nevermore/internal/model/user"
 
 	"github.com/asaskevich/govalidator"
+	"github.com/google/uuid"
 )
 
 type Service interface {
@@ -24,21 +26,24 @@ type Service interface {
 	Login(ctx context.Context, user *dto.LoginRequest) (*auth.Token, error)
 	Logout(ctx context.Context, email string) error
 	Refresh(ctx context.Context, rt string) (*auth.Token, error)
+	VerifyEmail(ctx context.Context, token string) error
 }
 
 type service struct {
 	st storage.Storage
 
-	manager auth.TokenManager
-	hash    hash.PasswordHasher
+	manager  auth.TokenManager
+	hash     hash.PasswordHasher
+	emailSrv email.Service
 }
 
-func New(st storage.Storage, manager auth.TokenManager, hash hash.PasswordHasher) Service {
+func New(st storage.Storage, manager auth.TokenManager, hash hash.PasswordHasher, emailSrv email.Service) Service {
 
 	result := &service{
-		st:      st,
-		manager: manager,
-		hash:    hash,
+		st:       st,
+		manager:  manager,
+		hash:     hash,
+		emailSrv: emailSrv,
 	}
 
 	return result
@@ -64,20 +69,34 @@ func (s *service) Register(ctx context.Context, req *dto.RegisterRequest) error 
 		return err
 	}
 
+	// Генерируем токен подтверждения
+	verificationToken := uuid.New().String()
 	user := &model.User{
-		Name:        req.Name,
-		PhoneNumber: req.PhoneNumber,
-		Email:       req.Email,
-		Role:        "user",
-		Password:    req.Password,
-		Photo:       nil,
-		CreatedAt:   time.Now().UTC(),
+		Name:              req.Name,
+		PhoneNumber:       req.PhoneNumber,
+		Email:             req.Email,
+		Role:              "user",
+		Password:          req.Password,
+		Photo:             nil,
+		CreatedAt:         time.Now().UTC(),
+		IsEmailVerified:   false,
+		VerificationToken: &verificationToken,
 	}
 
 	err = s.st.DB().User().Create(ctx, user)
 	if err != nil {
 		return fmt.Errorf("AuthService:Register err -> %s", err.Error())
 	}
+
+	// Отправляем email с токеном подтверждения
+	err = s.emailSrv.SendVerificationEmail(req.Email, verificationToken)
+	if err != nil {
+		log := logger.Get()
+		log.Error().Err(err).Msg("Failed to send verification email")
+		// Не возвращаем ошибку, чтобы регистрация прошла успешно
+		// Пользователь сможет запросить повторную отправку позже
+	}
+
 	return nil
 }
 
@@ -143,4 +162,13 @@ func (s *service) Refresh(ctx context.Context, rt string) (*auth.Token, error) {
 	}
 
 	return tokens, nil
+}
+
+func (s *service) VerifyEmail(ctx context.Context, token string) error {
+	err := s.st.DB().User().VerifyEmail(ctx, token)
+	if err != nil {
+		return fmt.Errorf("AuthService:VerifyEmail err -> %s", err.Error())
+	}
+
+	return nil
 }

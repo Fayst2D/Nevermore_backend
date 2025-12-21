@@ -189,6 +189,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/verify-email": {
+            "get": {
+                "description": "Подтверждает email адрес пользователя по токену из письма",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Подтверждение email адреса",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Токен подтверждения",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email успешно подтвержден",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка в запросе",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/author/delete/{id}": {
             "delete": {
                 "security": [
@@ -480,16 +524,8 @@ const docTemplate = `{
                         "minimum": 1,
                         "type": "integer",
                         "default": 50,
-                        "description": "Количество результатов на странице (по умолчанию 50, максимум 100)",
+                        "description": "Количество результатов на странице",
                         "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 0,
-                        "description": "Смещение для пагинации (по умолчанию 0)",
-                        "name": "offset",
                         "in": "query"
                     }
                 ],
@@ -1406,6 +1442,9 @@ const docTemplate = `{
                 },
                 "email": {
                     "type": "string"
+                },
+                "email_verified": {
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "integer"
