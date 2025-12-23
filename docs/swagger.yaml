@@ -336,7 +336,7 @@ paths:
         "200":
           description: Author information
           schema:
-            $ref: '#/definitions/user.User'
+            $ref: '#/definitions/dto.AuthorGetResponse'
         "404":
           description: Author not found
           schema:
@@ -374,7 +374,7 @@ paths:
       tags:
       - authors
   /author/update/{id}:
-    put:
+    post:
       consumes:
       - multipart/form-data
       description: Update selected author information with optional photo upload
@@ -454,6 +454,50 @@ paths:
       summary: Получение книг по автору
       tags:
       - books
+  /book/list:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех книг с поддержкой пагинации
+      parameters:
+      - default: 50
+        description: Количество результатов на странице
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      - default: 0
+        description: Смещение для пагинации (по умолчанию 0)
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ со списком книг
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Некорректные параметры пагинации
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение списка книг
+      tags:
+      - books
   /book/search:
     get:
       consumes:
@@ -471,6 +515,12 @@ paths:
         maximum: 100
         minimum: 1
         name: limit
+        type: integer
+      - default: 0
+        description: Смещение для пагинации (по умолчанию 0)
+        in: query
+        minimum: 0
+        name: offset
         type: integer
       produces:
       - application/json
@@ -497,7 +547,7 @@ paths:
       summary: Поиск книг по названию
       tags:
       - books
-  /books:
+  /book/upload:
     post:
       consumes:
       - multipart/form-data

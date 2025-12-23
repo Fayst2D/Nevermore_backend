@@ -71,3 +71,25 @@ func NewLogger() logger.Config {
 		ServiceName:       viper.GetString("logger.service_name"),
 	}
 }
+
+type SMTPConfig struct {
+	Host     string
+	Port     int
+	Username string
+	Password string
+	From     string
+}
+
+func SMTP() SMTPConfig {
+	return SMTPConfig{
+		Host:     viper.GetString("smtp.host"),
+		Port:     viper.GetInt("smtp.port"),
+		Username: viper.GetString("smtp.username"),
+		Password: viper.GetString("smtp.password"),
+		From:     viper.GetString("smtp.from"),
+	}
+}
+
+func AppBaseURL() string {
+	return viper.GetString("app.base_url")
+}

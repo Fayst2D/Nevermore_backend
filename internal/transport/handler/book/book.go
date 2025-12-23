@@ -42,7 +42,7 @@ func New(srv service.Service) *Handler {
 // @Failure 401 {object} map[string]string "Неавторизованный доступ"
 // @Failure 413 {object} map[string]string "Превышен максимальный размер файла"
 // @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
-// @Router /books [post]
+// @Router /book/upload [post]
 func (h *Handler) Create(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -166,7 +166,7 @@ func (h *Handler) GetByAuthor(c *gin.Context) {
 // @Security BearerAuth
 // @Produce json
 // @Param q query string true "Поисковый запрос"
-// @Param limit query integer false "Количество результатов на странице (по умолчанию 50, максимум 100)" default(50) minimum(1) maximum(100)
+// @Param limit query integer false "Количество результатов на странице" default(50) minimum(1) maximum(100)
 // @Param offset query integer false "Смещение для пагинации (по умолчанию 0)" default(0) minimum(0)
 // @Success 200 {object} map[string]interface{} "Результаты поиска"
 // @Success 200 {object} map[string]interface{} "Успешный ответ с книгами"
@@ -217,6 +217,58 @@ func (h *Handler) SearchByTitle(c *gin.Context) {
 
 	if len(books) == 0 {
 		response["message"] = "No books found matching your search"
+	}
+
+	c.JSON(200, response)
+}
+
+// @Summary Получение списка книг
+// @Description Возвращает список всех книг с поддержкой пагинации
+// @Tags books
+// @Accept json
+// @Security BearerAuth
+// @Produce json
+// @Param limit query integer false "Количество результатов на странице" default(50) minimum(1) maximum(100)
+// @Param offset query integer false "Смещение для пагинации (по умолчанию 0)" default(0) minimum(0)
+// @Success 200 {object} map[string]interface{} "Успешный ответ со списком книг"
+// @Failure 400 {object} map[string]string "Некорректные параметры пагинации"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /book/list [get]
+func (h *Handler) GetList(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Опциональные параметры пагинации
+	limitStr := c.DefaultQuery("limit", "50")
+	offsetStr := c.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 || limit > 100 {
+		limit = 50 // дефолтное значение
+	}
+
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 0 {
+		offset = 0
+	}
+
+	// Вызываем сервис для получения списка книг
+	books, err := h.srv.Book().GetList(ctx, limit, offset)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	response := gin.H{
+		"books": books,
+		"meta": gin.H{
+			"limit":  limit,
+			"offset": offset,
+		},
+	}
+
+	if len(books) == 0 {
+		response["message"] = "No books found"
 	}
 
 	c.JSON(200, response)

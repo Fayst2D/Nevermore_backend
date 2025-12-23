@@ -313,7 +313,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Author information",
                         "schema": {
-                            "$ref": "#/definitions/user.User"
+                            "$ref": "#/definitions/dto.AuthorGetResponse"
                         }
                     },
                     "404": {
@@ -369,7 +369,7 @@ const docTemplate = `{
             }
         },
         "/author/update/{id}": {
-            "put": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -493,6 +493,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/book/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Возвращает список всех книг с поддержкой пагинации",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "books"
+                ],
+                "summary": "Получение списка книг",
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 50,
+                        "description": "Количество результатов на странице",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Смещение для пагинации (по умолчанию 0)",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ со списком книг",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректные параметры пагинации",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/book/search": {
             "get": {
                 "security": [
@@ -527,6 +593,14 @@ const docTemplate = `{
                         "description": "Количество результатов на странице",
                         "name": "limit",
                         "in": "query"
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Смещение для пагинации (по умолчанию 0)",
+                        "name": "offset",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -558,7 +632,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/books": {
+        "/book/upload": {
             "post": {
                 "security": [
                     {

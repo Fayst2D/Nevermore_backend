@@ -13,6 +13,7 @@ type Repo interface {
 	SaveFirstPage(ctx context.Context, tx *sqlx.Tx, url string, bookId int) error
 	GetByAuthor(ctx context.Context, authorID int) ([]dto.GetBookRequest, error)
 	SearchByTitle(ctx context.Context, searchQuery string, limit, offset int) ([]dto.GetBookRequest, error)
+	GetList(ctx context.Context, limit, offset int) ([]dto.GetBookRequest, error)
 }
 
 type repo struct {
@@ -82,6 +83,19 @@ func (r *repo) SearchByTitle(ctx context.Context, searchQuery string, limit, off
 
 	var books []dto.GetBookRequest
 	err := r.db.SelectContext(ctx, &books, searchQuerySQL, searchPattern, limit, offset)
+
+	return books, err
+}
+
+func (r *repo) GetList(ctx context.Context, limit, offset int) ([]dto.GetBookRequest, error) {
+	query := `
+		SELECT title, description, cover_image_url, file_url, uploaded_by, author_id
+		FROM books 
+		ORDER BY created_at DESC 
+		LIMIT $1 OFFSET $2`
+
+	var books []dto.GetBookRequest
+	err := r.db.SelectContext(ctx, &books, query, limit, offset)
 
 	return books, err
 }
