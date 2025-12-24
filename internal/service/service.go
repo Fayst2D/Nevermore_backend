@@ -42,11 +42,12 @@ func New(st storage.Storage,
 
 	//go chat.Run()
 	result := &service{
-		user:   user.New(st, emailSrv),
-		author: author.New(st),
-		book:   book.New(st, wp),
-		auth:   authorization.New(st, manager, hash, emailSrv),
-		chat:   chat.New(st, wp),
+		user:        user.New(st, emailSrv),
+		author:      author.New(st),
+		book:        book.New(st, wp),
+		auth:        authorization.New(st, manager, hash, emailSrv),
+		chat:        chat.New(st, wp),
+		savedAuthor: saved_author.New(st),
 	}
 
 	return result

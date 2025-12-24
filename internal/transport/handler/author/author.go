@@ -31,7 +31,7 @@ func New(srv service.Service) *Handler {
 // @Security BearerAuth
 // @Produce json
 // @Param id path int true "Author ID"
-// @Success 200 {object} user.User "Author information"
+// @Success 200 {object} dto.AuthorGetResponse "Author information"
 // @Failure 404 {object} string "Author not found"
 // @Failure 500 {object} string "Internal server error"
 // @Router /author/get/{id} [get]
@@ -94,7 +94,7 @@ func (h *Handler) GetAuthorsList(c *gin.Context) {
 // @Failure 404 {object} string "Author not found"
 // @Failure 400 {object} string "Bad request - invalid data"
 // @Failure 500 {object} string "Internal server error"
-// @Router /author/update/{id} [put]
+// @Router /author/update/{id} [post]
 func (h *Handler) Update(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()

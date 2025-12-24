@@ -31,14 +31,13 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 		router: gin.Default(),
 	}
 
+	// CORS настроен для работы
 	handler.router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Разрешить все домены
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"},
-		AllowHeaders:     []string{"*"}, // Разрешить все заголовки
-		ExposeHeaders:    []string{"Content-Length", "Authorization"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		MaxAge:       12 * time.Hour}))
+	//handler.router.Use(corsConfig)
 
 	//добавление СВАГИ
 	handler.router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -56,6 +55,7 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 
 	protected := handler.router.Group("/")
 	protected.Use(middleware2.AuthMiddleware(manager))
+	//protected.Use(corsConfig)
 	protected.Use(middleware2.RateLimiter(1 * time.Second))
 	{
 		protected.GET("/user", userHandler.Get)
@@ -74,6 +74,7 @@ func New(serv service.Service, manager *tokenManager.Manager) *gin.Engine {
 		protected.POST("/book/upload", bookHandler.Create)
 		protected.GET("/book/by-author/:author_id", bookHandler.GetByAuthor)
 		protected.GET("/book/search", bookHandler.SearchByTitle)
+		protected.GET("/book/list", bookHandler.GetList)
 
 		protected.GET("/chat/ws", chatHandler.WebSocketHandler)
 		protected.GET("/chat/messages", chatHandler.GetMessages)

@@ -7,8 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"nevermore/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 const timeout = 15 * time.Second
@@ -132,7 +133,9 @@ func (h *Handler) GetList(c *gin.Context) {
 	}
 
 	userIDStr, ok := userID.(string)
+
 	if !ok {
+		//print(userID)
 		c.JSON(500, gin.H{"error": "Internal server error"})
 		return
 	}

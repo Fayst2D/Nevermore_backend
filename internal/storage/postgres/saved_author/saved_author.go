@@ -54,10 +54,10 @@ func (r *repo) Delete(ctx context.Context, id int) error {
 func (r *repo) GetSavedAuthorsList(ctx context.Context, userID int) ([]*dto.AuthorGetResponse, error) {
 	var authors []*dto.AuthorGetResponse
 
-	query := `SELECT authors.name, authors.biography, authors.photo_url, saved_authors.created_at 
+	query := `SELECT authors.name, authors.biography, authors.photo_url
               FROM saved_authors 
               JOIN authors ON saved_authors.author_id = authors.id 
-              WHERE saved_authors.user_id = ? 
+              WHERE saved_authors.user_id = $1 
               ORDER BY saved_authors.created_at DESC`
 
 	err := r.db.SelectContext(ctx, &authors, query, userID)
